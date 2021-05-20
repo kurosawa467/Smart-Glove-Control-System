@@ -7,7 +7,7 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(pin, GPIO.OUT)
 
 # bind all IP
-HOST = '192.168.178.27' 
+HOST = '****' 
 # Listen on Port 
 PORT = 44444 
 #Size of receive buffer   
