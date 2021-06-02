@@ -1,7 +1,6 @@
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
-import RPi.GPIO as GPIO
-import threading
+from .app import SensorMessageQueue
 
 MQTT_ADDRESS = '192.168.178.100'
 MQTT_USER = 'mosquitto'
@@ -18,7 +17,6 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
   print('Message topic: ' + msg.topic + ', message payload: ' + str(msg.payload))
-#   client.publish('button', '1 Button is pushed')
  
   if msg.topic == MQTT_TOPIC_BUTTON_SUB:
       if client.publish(MQTT_TOPIC_BUTTON_PUB, '1: Button pushed - From Broker'):
@@ -32,10 +30,16 @@ def on_message(client, userdata, msg):
           print('Flex sensor message failed to be published to esp8266')
   else:
       print('Message cannot be recognized.')
+  
+  # To modify it for our project:
+  # msg should contain all sensor information from the microcontroller on the glove
+  # Extract the msg and reorganize sensor data in this format (this is only a placeholder for now)
+  # =>[float flex_1],[float flex_2],[float flex_3],[float flex_4],[float IMU_Quat],[float IMU_x],[float IMU_y],[float IMU_z]
+  message = ''
+  SensorMessageQueue.pushNewMessage(message)
    
 
 def main():
-  #mqtt_client = mqtt.Client('ESP32')
   mqtt_client = mqtt.Client()
   mqtt_client.username_pw_set(MQTT_USER, MQTT_PASSWORD)
   mqtt_client.on_connect = on_connect
