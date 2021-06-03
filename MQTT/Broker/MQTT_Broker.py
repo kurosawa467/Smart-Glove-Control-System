@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
-from .app import SensorMessageQueue
+from app import SensorMessageQueue, SmartGloveControlSystem
 
 MQTT_ADDRESS = '192.168.178.100'
 MQTT_USER = 'mosquitto'
@@ -30,13 +30,15 @@ def on_message(client, userdata, msg):
           print('Flex sensor message failed to be published to esp8266')
   else:
       print('Message cannot be recognized.')
-  
+ 
   # To modify it for our project:
   # msg should contain all sensor information from the microcontroller on the glove
-  # Extract the msg and reorganize sensor data in this format (this is only a placeholder for now)
+  # Extract the msg, process the data, and reorganize sensor data in this format (this is only a placeholder for now)
   # =>[float flex_1],[float flex_2],[float flex_3],[float flex_4],[float IMU_Quat],[float IMU_x],[float IMU_y],[float IMU_z]
-  message = ''
-  SensorMessageQueue.pushNewMessage(message)
+  sensorMessageQueue = SensorMessageQueue()
+  message = '=>111,222.22,333.333,444.4,55.5,6.6666,77.7777,8888'
+  SensorMessageQueue().pushNewMessage(message)
+  SmartGloveControlSystem().handle_queue()
    
 
 def main():
