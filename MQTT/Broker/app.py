@@ -7,7 +7,7 @@ import time
 
 class SensorMessageQueue:
     def __init__(self):
-        self.queue = Queue()
+        time.sleep(0.1)
 
     def pushNewMessage(self, message):
         self.queue.put(message)
@@ -67,7 +67,7 @@ class SmartGloveControlSystem:
 
 def main():
     while True:
-        time.sleep(5)
+        time.sleep(1)
         SmartGloveControlSystem.handle_queue()
 
 if __name__ == '__main__':
