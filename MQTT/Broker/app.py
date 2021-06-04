@@ -6,6 +6,8 @@ from queue import Queue
 import time
 
 class SensorMessageQueue:
+    queue = Queue()
+    
     def __init__(self):
         time.sleep(0.1)
 
