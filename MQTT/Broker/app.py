@@ -56,15 +56,17 @@ class SmartGloveControlSystem:
     
     def handle_queue(self):
         queue = SensorMessageQueue.queue
+        print('Checking message queue')
         if queue.qsize():
             self.logger.info('Message queued, start processing')
+            print('Message queued, start processing')
         else:
             self.logger.info('Message queue is empty')
+            print('Message queue is empty')
             return
 
-        for message in queue:
+        while not queue.empty():
             message = queue.get()
-            self.logger.debug(message)
             self.handle_message(message)
 
 def main():
