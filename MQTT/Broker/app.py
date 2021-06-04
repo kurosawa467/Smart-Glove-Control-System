@@ -2,7 +2,7 @@ from enum import Enum
 import serial
 from serial import Serial, SerialException
 import logging
-from queue import Queue
+from Queue import Queue
 import time
 
 class SensorMessageQueue:
@@ -12,7 +12,9 @@ class SensorMessageQueue:
         time.sleep(0.1)
 
     def pushNewMessage(self, message):
-        self.queue.put(message)
+        SensorMessageQueue.queue.put(message)
+        print('Queue size is ' + str(SensorMessageQueue.queue.qsize()))
+        print('Message has been pushed into queue')
 
 class SmartGloveControlSystem:
     # IoT device command, placeholders for now
@@ -32,7 +34,7 @@ class SmartGloveControlSystem:
 
     def start_looping(self):
         self.handle_queue()
-    
+   
     def handle_message(self, raw_message):
 
         # This is a placeholder format of the message
@@ -52,14 +54,15 @@ class SmartGloveControlSystem:
             return
 
         tokens = message.split(',')
-        self.logger.debug(tokens)
-    
+        print(tokens)
+   
     def handle_queue(self):
         queue = SensorMessageQueue.queue
         print('Checking message queue')
+        
         if queue.qsize():
             self.logger.info('Message queued, start processing')
-            print('Message queued, start processing')
+            print('Message found, started procesing')
         else:
             self.logger.info('Message queue is empty')
             print('Message queue is empty')
@@ -72,7 +75,8 @@ class SmartGloveControlSystem:
 def main():
     while True:
         time.sleep(1)
-        SmartGloveControlSystem.handle_queue()
+        smartGloveControlSystem = SmartGloveControlSystem()
+        smartGloveControlSystem.handle_queue()
 
 if __name__ == '__main__':
   print('main function started')
