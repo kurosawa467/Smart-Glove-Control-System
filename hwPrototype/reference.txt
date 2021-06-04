@@ -1,0 +1,11 @@
+IMU wiring:
+red 3.3v  		(Vin on IMU)
+black ground	(GND on IMU)
+blue   gpio21   (SDA on IMU)
+yellow	gpio22	(SCL on IMU)
+
+
+WARNING: ADC2 is not usable when WiFi(and probably BT) is in use. Use ADC1 pins! (GPIO32 - GPIO39) (32-35 seems safer)
+
+1 bend sensor version:
+green GPIO32(ADC1_CH04) = finger 1 cable (3.3V-flex sensor-[THIS cable probes here]-resisor-ground)

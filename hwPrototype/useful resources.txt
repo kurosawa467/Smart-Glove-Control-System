@@ -1,0 +1,6 @@
+
+
+https://github.com/sparkfun/SparkFun_BNO080_Arduino_Library
+https://github.com/adafruit/Adafruit_BNO08x
+https://github.com/adafruit/Adafruit_BNO055
+https://github.com/natanaeljr/esp32-MPU-driver
