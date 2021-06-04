@@ -18,6 +18,8 @@ class SensorMessageQueue:
         SensorMessageQueue.queue.put(message)
         print('Queue size is ' + str(SensorMessageQueue.queue.qsize()))
         print('Message has been pushed into queue')
+        smartGloveControlSystem = SmartGloveControlSystem()
+        smartGloveControlSystem.handle_queue()
 
 class SmartGloveControlSystem:
     # IoT device command, placeholders for now
@@ -75,12 +77,12 @@ class SmartGloveControlSystem:
             message = queue.get()
             self.handle_message(message)
 
-def main():
-    while True:
-        time.sleep(1)
-        smartGloveControlSystem = SmartGloveControlSystem()
-        smartGloveControlSystem.handle_queue()
-
-if __name__ == '__main__':
-  print('main function started')
-  main()
+#def main():
+#    while True:
+#        time.sleep(1)
+#        smartGloveControlSystem = SmartGloveControlSystem()
+#        smartGloveControlSystem.handle_queue()
+#
+#if __name__ == '__main__':
+#  print('main function started')
+#  main()
