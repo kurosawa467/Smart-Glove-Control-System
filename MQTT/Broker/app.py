@@ -5,7 +5,7 @@ import logging
 try:
     from queue import queue as Queue
 except ImportError:
-    from Queue import Queue
+    from queue import Queue
 import time
 
 class SensorMessageQueue:
