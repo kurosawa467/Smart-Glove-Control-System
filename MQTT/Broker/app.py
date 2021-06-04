@@ -3,7 +3,7 @@ import serial
 from serial import Serial, SerialException
 import logging
 try:
-    from queue import queue as Queue
+    from queue import Queue
 except ImportError:
     from Queue import Queue
 import time
