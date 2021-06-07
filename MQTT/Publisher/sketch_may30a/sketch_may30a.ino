@@ -1,10 +1,11 @@
 #include "PubSubClient.h"
 #include "WiFi.h"
+#include "WifiAccess.h"
 
-const char* ssid = "WG01";
-const char* wifi_password = "321losgehts";
+const char* ssid = ssid_name;
+const char* wifi_password = password_name;
 
-const char* mqtt_server = "192.168.178.100";
+const char* mqtt_server = server_ip;
 const char* button_topic = "/esp32/button";
 const char* flex_topic = "/esp32/flex";
 const char* mqtt_username = "mosquitto";

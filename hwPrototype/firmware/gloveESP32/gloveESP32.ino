@@ -55,11 +55,12 @@ void quaternionToEulerGI(sh2_GyroIntegratedRV_t* rotational_vector, euler_t* ypr
 ///////////////
 #include "PubSubClient.h"
 #include "WiFi.h"
+#include "WifiAccess.h"
 
-const char* ssid = "4025 mk2";
-const char* wifi_password = "147258369a";
+const char* ssid = ssid_name;
+const char* wifi_password = password_name;
 
-const char* mqtt_server = "192.168.0.12";
+const char* mqtt_server = server_ip;
 const char* button_topic = "/esp32/button";
 const char* flex_topic = "/esp32/flex";
 const char* mqtt_username = "mosquitto";
