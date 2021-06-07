@@ -1,0 +1,4 @@
+LED wiring. The used pin have to support PWM
+RED: D5 (or GPIO14)
+GREEN: D6 (or GPIO12)
+BLUE: D8 (or GPIO15)
