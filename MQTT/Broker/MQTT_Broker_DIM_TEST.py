@@ -36,13 +36,19 @@ def on_message(client, userdata, msg):
   elif msg.topic == MQTT_TOPIC_FLEX_SUB:
       message_string = str(msg.payload, encoding)
       tokens = message_string[message_string.index('=>') + 2:].rstrip().split(',')
-      angle = float(tokens[0])
-      if angle <= 20 or angle >= 150:
-          ledDim = int((angle + 50) / 5.2)
-          if client.publish(MQTT_TOPIC_FLEX_PUB, '0 '+ str(ledDim)):
-              print('Published flex sensor message to esp8266')
-          else:
-              print('Flex sensor message failed to be published to esp8266')
+      roll = float(tokens[4])
+      ledDim = int(100 * (roll + 180) / 360)
+      if client.publish(MQTT_TOPIC_FLEX_PUB, '0 '+ str(ledDim)):
+          print('Published flex sensor message to esp8266')
+      else:
+          print('Flex sensor message failed to be published to esp8266')
+#      angle = float(tokens[0])
+#      if angle <= 20 or angle >= 150:
+#          ledDim = int((angle + 50) / 5.2)
+#          if client.publish(MQTT_TOPIC_FLEX_PUB, '0 '+ str(ledDim)):
+#              print('Published flex sensor message to esp8266')
+#          else:
+#              print('Flex sensor message failed to be published to esp8266')
   else:
       print('Message cannot be recognized.')
  
