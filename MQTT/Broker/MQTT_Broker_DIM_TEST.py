@@ -11,6 +11,7 @@ MQTT_TOPIC_BUTTON_PUB = '/esp8266/button'
 MQTT_TOPIC_FLEX_PUB = '/esp8266/flex'
 dim = 50
 direction = 1
+encoding = 'utf-8'
 
 def on_connect(client, userdata, flags, rc):
   print('Connected with ESP32, result: ' + str(rc))
@@ -33,12 +34,14 @@ def on_message(client, userdata, msg):
       else:
           print('Button message failed to be published to esp8266')
   elif msg.topic == MQTT_TOPIC_FLEX_SUB:
-      tokens = msg.payload.split(',')
-      angle = tokens[0]
-      ledDim = (angle + 20) / 520
-      if client.publish(MQTT_TOPIC_FLEX_PUB, '0 '+ str(ledDim)):
+      message_string = str(msg.payload, encoding)
+      tokens = message_string[message_string.index('=>') + 2:].rstrip().split(',')
+      angle = float(tokens[0])
+      if angle <= 20 or angle >= 150:
+        ledDim = int((angle + 50) / 5.2)
+        if client.publish(MQTT_TOPIC_FLEX_PUB, '0 '+ str(ledDim)):
           print('Published flex sensor message to esp8266')
-      else:
+        else:
           print('Flex sensor message failed to be published to esp8266')
   else:
       print('Message cannot be recognized.')
