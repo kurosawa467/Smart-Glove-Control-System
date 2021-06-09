@@ -33,7 +33,10 @@ def on_message(client, userdata, msg):
       else:
           print('Button message failed to be published to esp8266')
   elif msg.topic == MQTT_TOPIC_FLEX_SUB:
-      if client.publish(MQTT_TOPIC_FLEX_PUB, '0 '+ str(dim)):
+      tokens = msg.payload.split(',')
+      angle = tokens[0]
+      ledDim = (angle + 20) / 520
+      if client.publish(MQTT_TOPIC_FLEX_PUB, '0 '+ str(ledDim)):
           print('Published flex sensor message to esp8266')
       else:
           print('Flex sensor message failed to be published to esp8266')
