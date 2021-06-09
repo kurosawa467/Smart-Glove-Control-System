@@ -2,14 +2,11 @@ from enum import Enum
 import serial
 from serial import Serial, SerialException
 import logging
-try:
-    from queue import Queue
-except ImportError:
-    from Queue import Queue
+import queue
 import time
 
 class SensorMessageQueue:
-    queue = Queue()
+    queue = queue.Queue()
     
     def __init__(self):
         time.sleep(0.1)
