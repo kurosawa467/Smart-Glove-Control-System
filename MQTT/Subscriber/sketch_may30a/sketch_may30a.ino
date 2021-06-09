@@ -80,9 +80,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
 void set_led(int color, int ratio){
   int green = color%2;
-  color = color<<2;
+  color = color>>1;
   int blue = color%2;
-  color = color<<2;
+  color = color>>1;
   int red = color%2;
   
   int pwmIntervals = 100;
