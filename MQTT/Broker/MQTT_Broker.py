@@ -19,12 +19,14 @@ def on_message(client, userdata, msg):
   print('Message topic: ' + msg.topic + ', message payload: ' + str(msg.payload))
  
   if msg.topic == MQTT_TOPIC_BUTTON_SUB:
-      if client.publish(MQTT_TOPIC_BUTTON_PUB, '1: Button pushed - From Broker'):
+      #if client.publish(MQTT_TOPIC_BUTTON_PUB, '1: Button pushed - From Broker'):
+      if client.publish(MQTT_TOPIC_BUTTON_PUB, '1 30'):
           print('Published button message to esp8266')
       else:
           print('Button message failed to be published to esp8266')
   elif msg.topic == MQTT_TOPIC_FLEX_SUB:
-      if client.publish(MQTT_TOPIC_FLEX_PUB, '0: Flex sensor is bent - From Broker'):
+      #if client.publish(MQTT_TOPIC_FLEX_PUB, '0: Flex sensor is bent - From Broker'):
+      if client.publish(MQTT_TOPIC_FLEX_PUB, '1 70'):
           print('Published flex sensor message to esp8266')
       else:
           print('Flex sensor message failed to be published to esp8266')
