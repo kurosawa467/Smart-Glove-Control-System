@@ -1,11 +1,62 @@
 #include <ESP32AnalogRead.h>
 //#include "connectivity.c"
 
-////////
-///////////////////////////////////////////////
 #include <Arduino.h>
 #include <Adafruit_BNO08x.h>
 #define BNO08X_RESET -1
+
+#include "PubSubClient.h"
+#include "WiFi.h"
+#include "WifiAccess.h"
+
+// Constants for WiFi and MQTT connection
+const char* ssid = ssid_name;
+const char* wifi_password = password_name;
+
+const char* mqtt_server = server_ip;
+const char* button_topic = "/esp32/button";
+const char* flex_topic = "/esp32/flex";
+const char* mqtt_username = "mosquitto";
+const char* mqtt_password = "mosquitto";
+const char* clientID = "ESP32";
+WiFiClient wifiClient;
+PubSubClient client(mqtt_server, 1883, wifiClient);
+
+// Constants for IMU sensor and flex sensor
+ESP32AnalogRead adc;
+#define ADC_BITS 12
+const int FINGER_PIN_1 = 32; // Pin connected to voltage divider output
+
+//const float ADC_SYSTEM_VCC = 5.0; // this is irrelevant of the flex sensor voltage supply
+const float FLEX_VCC = 3.3;//this is the for the voltage supply of the flex sensor
+const float R_DIV = 47000.0; // resistance resistor
+
+const float STRAIGHT_RESISTANCE = 30000.0; // unfortunately not consistent between sensors. data for the one I am currently using: min 20, hand mounted typical min 22, straight 24-30
+const float BEND_RESISTANCE = 50000.0; // hand mounted typical 45-50, but this one can do 100 max when bent more (not possible when hand mounted)
+
+void connect_WiFi() {
+  Serial.print("ESP32 is trying to connect to ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, wifi_password);
+
+  while(WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("WiFi connected");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+void connect_MQTT() {
+  Serial.println("Trying to connect to MQTT broker");
+  if (client.connect(clientID, mqtt_username, mqtt_password)) {
+    Serial.println("Connected to MQTT broker");
+  } else {
+    Serial.println("Connection failed");
+  }
+}
 
 struct euler_t {
   float yaw;
@@ -51,60 +102,6 @@ void quaternionToEulerRV(sh2_RotationVectorWAcc_t* rotational_vector, euler_t* y
 void quaternionToEulerGI(sh2_GyroIntegratedRV_t* rotational_vector, euler_t* ypr, bool degrees = false) {
     quaternionToEuler(rotational_vector->real, rotational_vector->i, rotational_vector->j, rotational_vector->k, ypr, degrees);
 }
-/////////////////////////////////////////////////////////
-///////////////
-#include "PubSubClient.h"
-#include "WiFi.h"
-#include "WifiAccess.h"
-
-const char* ssid = ssid_name;
-const char* wifi_password = password_name;
-
-const char* mqtt_server = server_ip;
-const char* button_topic = "/esp32/button";
-const char* flex_topic = "/esp32/flex";
-const char* mqtt_username = "mosquitto";
-const char* mqtt_password = "mosquitto";
-const char* clientID = "ESP32";
-WiFiClient wifiClient;
-PubSubClient client(mqtt_server, 1883, wifiClient);
-
-void connect_WiFi() {
-  Serial.print("ESP32 is trying to connect to ");
-  Serial.println(ssid);
-
-  WiFi.begin(ssid, wifi_password);
-
-  while(WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("WiFi connected");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-}
-void connect_MQTT() {
-  Serial.println("Trying to connect to MQTT broker");
-  if (client.connect(clientID, mqtt_username, mqtt_password)) {
-    Serial.println("Connected to MQTT broker");
-  } else {
-    Serial.println("Connection failed");
-  }
-}
-
-
-
-ESP32AnalogRead adc;
-#define ADC_BITS 12
-const int FINGER_PIN_1 = 32; // Pin connected to voltage divider output
-
-//const float ADC_SYSTEM_VCC = 5.0; // this is irrelevant of the flex sensor voltage supply
-const float FLEX_VCC = 3.3;//this is the for the voltage supply of the flex sensor
-const float R_DIV = 47000.0; // resistance resistor
-
-const float STRAIGHT_RESISTANCE = 30000.0; // unfortunately not consistent between sensors. data for the one I am currently using: min 20, hand mounted typical min 22, straight 24-30
-const float BEND_RESISTANCE = 50000.0; // hand mounted typical 45-50, but this one can do 100 max when bent more (not possible when hand mounted)
 
 
 float getFingerAngle(){ //TODO add multi finger support
@@ -133,17 +130,14 @@ void setup(){
 
 
 void sendMessage() {
-  ////////////////////////////
-
-  /////////////////////////////
-  
   Serial.println("Flex sensor bending detected.");
   String fAng=String(getFingerAngle());
   String senStat = String(sensorValue.status);
   String senYaw = String(ypr.yaw);
   String senPitch = String(ypr.pitch);
   String senRoll=String(ypr.roll);
-  String message = "fingerAngle:"+fAng+",imuStatus:"+senStat+",yaw:"+senYaw+",pitch:"+senPitch+",roll:"+senRoll;
+  //String message = "fingerAngle:"+fAng+",imuStatus:"+senStat+",yaw:"+senYaw+",pitch:"+senPitch+",roll:"+senRoll;
+  String message = "=>"+fAng+","+senStat+","+senYaw+","+senPitch+","+senRoll;
   
   char* flexDetectionMessage = const_cast<char*>(message.c_str());
   if (client.publish(flex_topic, flexDetectionMessage)) {
