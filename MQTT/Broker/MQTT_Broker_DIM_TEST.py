@@ -39,7 +39,6 @@ def on_message(client, userdata, msg):
       roll = float(tokens[4])
       ledDim = int(100 * (roll + 180) / 360)
       if client.publish(MQTT_TOPIC_FLEX_PUB, '0 '+ str(ledDim)):
-        ledDim = int((angle + 50) / 5.2)
         print('Published flex sensor message to esp8266')
       else:
         print('Flex sensor message failed to be published to esp8266')
