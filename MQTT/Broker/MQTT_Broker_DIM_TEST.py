@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 from app import SensorMessageQueue, SmartGloveControlSystem
 
-MQTT_ADDRESS = '192.168.178.27'
+MQTT_ADDRESS = '192.168.0.12'
 MQTT_USER = 'mosquitto'
 MQTT_PASSWORD = 'mosquitto'
 MQTT_TOPIC_BUTTON_SUB = '/esp32/button'
@@ -36,13 +36,21 @@ def on_message(client, userdata, msg):
   elif msg.topic == MQTT_TOPIC_FLEX_SUB:
       message_string = str(msg.payload, encoding)
       tokens = message_string[message_string.index('=>') + 2:].rstrip().split(',')
-      angle = float(tokens[0])
-      if angle <= 20 or angle >= 150:
-        ledDim = int((angle + 50) / 5.2)
-        if client.publish(MQTT_TOPIC_FLEX_PUB, '0 '+ str(ledDim)):
-          print('Published flex sensor message to esp8266')
-        else:
-          print('Flex sensor message failed to be published to esp8266')
+      roll = float(tokens[4])
+      pitch=float(tokens[3])
+      ledDim = int(100 * (roll + 180) / 360)
+      color = int(16*(pitch+180)/360)%8
+      if client.publish(MQTT_TOPIC_FLEX_PUB, str(color) + str(ledDim)):
+        print('Published flex sensor message to esp8266')
+      else:
+        print('Flex sensor message failed to be published to esp8266')
+#      angle = float(tokens[0])
+#      if angle <= 20 or angle >= 150:
+#          ledDim = int((angle + 50) / 5.2)
+#          if client.publish(MQTT_TOPIC_FLEX_PUB, '0 '+ str(ledDim)):
+#              print('Published flex sensor message to esp8266')
+#          else:
+#              print('Flex sensor message failed to be published to esp8266')
   else:
       print('Message cannot be recognized.')
  

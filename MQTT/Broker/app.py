@@ -9,7 +9,7 @@ class SensorMessageQueue:
     queue = queue.Queue()
     
     def __init__(self):
-        time.sleep(0.1)
+        time.sleep(0.0001)
 
     def pushNewMessage(self, message):
         SensorMessageQueue.queue.put(message)
