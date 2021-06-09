@@ -61,10 +61,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
   Serial.println(".");
 
+  // color is a 3-bit number decoding rgb
   int color = payload[0] - 48 ;
   Serial.print("Color:");
   Serial.println(color);
-
   
   int ratio = 0;
   for(int i=2;i<length;i++)
@@ -79,6 +79,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
 }
 
 void set_led(int color, int ratio){
+  int green = color%2;
+  color = color<<2;
+  int blue = color%2;
+  color = color<<2;
+  int red = color%2;
+  
   int pwmIntervals = 100;
 
   int stepSize = (pwmIntervals * log10(2))/(log10(255));
@@ -87,28 +93,11 @@ void set_led(int color, int ratio){
 
   Serial.print("Brightness:");
   Serial.println(brightness);
-  
-  switch(color){
-    case 0:
-      Serial.println("set LED RED");
-      analogWrite(RED_Pin, brightness);
-      analogWrite(GREEN_Pin, 0);
-      analogWrite(BLUE_Pin, 0);
-      break;
-    case 1:
-      Serial.println("set LED GREEN");
-      analogWrite(GREEN_Pin, brightness);
-      
-      analogWrite(RED_Pin, 0);
-      analogWrite(BLUE_Pin, 0);
-      break;
-    default:
-      Serial.println("set LED BLUE");
-      analogWrite(BLUE_Pin, brightness);
 
-      analogWrite(RED_Pin, 0);
-      analogWrite(GREEN_Pin, 0);
-  }
+  analogWrite(RED_Pin, red * brightness);
+  analogWrite(GREEN_Pin, green * brightness);
+  analogWrite(BLUE_Pin, blue * brightness);
+  
 }
 
 void dim(){
