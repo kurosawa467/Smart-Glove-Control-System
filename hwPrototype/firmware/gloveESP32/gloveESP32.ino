@@ -14,8 +14,7 @@ const char* ssid = ssid_name;
 const char* wifi_password = password_name;
 
 const char* mqtt_server = server_ip;
-const char* button_topic = "/esp32/button";
-const char* flex_topic = "/esp32/flex";
+const char* glove_topic = "/esp32/glove";
 const char* mqtt_username = "mosquitto";
 const char* mqtt_password = "mosquitto";
 const char* clientID = "ESP32";
@@ -23,9 +22,11 @@ WiFiClient wifiClient;
 PubSubClient client(mqtt_server, 1883, wifiClient);
 
 // Constants for IMU sensor and flex sensor
-ESP32AnalogRead adc;
+ESP32AnalogRead adc1;
+ESP32AnalogRead adc2;
 #define ADC_BITS 12
 const int FINGER_PIN_1 = 32; // Pin connected to voltage divider output
+const int FINGER_PIN_2 = 33; // Pin connected to voltage divider output
 
 //const float ADC_SYSTEM_VCC = 5.0; // this is irrelevant of the flex sensor voltage supply
 const float FLEX_VCC = 3.3;//this is the for the voltage supply of the flex sensor
@@ -104,7 +105,7 @@ void quaternionToEulerGI(sh2_GyroIntegratedRV_t* rotational_vector, euler_t* ypr
 }
 
 
-float getFingerAngle(){ //TODO add multi finger support
+float getFingerAngle(ESP32AnalogRead adc){ //TODO add multi finger support
   float resistorV =adc.readVoltage(); //we can change this to adc.readMiliVolts()and modify the code a bit to have higher reading resolution, but less resolution might be better here
   float flexV=FLEX_VCC-resistorV;
   float flexR = R_DIV * (flexV/resistorV);
@@ -113,7 +114,8 @@ float getFingerAngle(){ //TODO add multi finger support
 }
 
 void setup(){
-  adc.attach(FINGER_PIN_1);
+  adc1.attach(FINGER_PIN_1);
+  adc2.attach(FINGER_PIN_2);
   Serial.begin(115200);
   //pinMode(FINGER_PIN_1, INPUT);
   connect_WiFi();
@@ -131,23 +133,30 @@ void setup(){
 
 void sendMessage() {
   Serial.println("Flex sensor bending detected.");
-  String fAng=String(getFingerAngle());
+  String fAng = "0";
+  String fAng1 = "0";
+  String fAng2 = "0";
+  if (getFingerAngle(adc1) >= 100) {
+    fAng1 = "1";
+  }
+  if (getFingerAngle(adc2) >= 100) {
+    fAng2 = "1";
+  }
   String senStat = String(sensorValue.status);
   String senYaw = String(ypr.yaw);
   String senPitch = String(ypr.pitch);
   String senRoll=String(ypr.roll);
   //String message = "fingerAngle:"+fAng+",imuStatus:"+senStat+",yaw:"+senYaw+",pitch:"+senPitch+",roll:"+senRoll;
-  String message = "=>"+fAng+","+senStat+","+senYaw+","+senPitch+","+senRoll;
-  Serial.println(message);
+  String message = "=>"+fAng1+","+fAng+","+fAng2+","+fAng+","+senStat+","+senYaw+","+senPitch+","+senRoll;
   
   char* flexDetectionMessage = const_cast<char*>(message.c_str());
-  if (client.publish(flex_topic, flexDetectionMessage)) {
+  if (client.publish(glove_topic, flexDetectionMessage)) {
     Serial.println("Flex detection message sent to MQTT broker");
   } else {
     Serial.println("Flex detection message failed to send to MQTT broker. Reconnecting...");
     client.connect(clientID, mqtt_username, mqtt_password);
     delay(100);
-    client.publish(flex_topic, flexDetectionMessage);
+    client.publish(glove_topic, flexDetectionMessage);
   }
 }
 
@@ -191,5 +200,5 @@ void loop(){
   //Serial.println("Bend: " + String(angle) + " degrees");
   //Serial.println();
 
-  delay(100);
+  delay(500);
 }

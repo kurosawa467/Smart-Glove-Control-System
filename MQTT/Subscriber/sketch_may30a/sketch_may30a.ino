@@ -12,14 +12,14 @@ const char* analog_led_topic = "/esp8266/1.1";
 const char* digital_led_topic = "/esp8266/1.2";
 const char* mqtt_username = "mosquitto";
 const char* mqtt_password = "mosquitto";
-const char* clientID = "ESP8266";
+const char* clientID = "ESP8266/1";
 
 const int RED_ANALOG_PIN = 14;
 const int GREEN_ANALOG_PIN = 12;
 const int BLUE_ANALOG_PIN = 15;
-const int RED_DIGITAL_PIN = 10;
-const int GREEN_DIGITAL_PIN = 9;
-const int BLUE_DIGITAL_PIN = 8;
+const int RED_DIGITAL_PIN = 5;
+const int GREEN_DIGITAL_PIN = 4;
+const int BLUE_DIGITAL_PIN = 0;
 
 WiFiClient espClient;
 PubSubClient client(mqtt_server, 1883, espClient);
@@ -76,8 +76,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   color = color >> 1;
   int red = color % 2;
 
-  if(strcmp(topic, analog_led_topic)){
-
+  if(!strcmp(topic, analog_led_topic)){
     int ratio = 0;
     for (int i = 2; i < length; i++)
     {
@@ -109,6 +108,7 @@ void set_analog_led(int red, int green, int blue, int ratio) {
   analogWrite(BLUE_ANALOG_PIN, blue * brightness);
 
 }
+
 void set_digital_led(int red, int green, int blue){
   digitalWrite(RED_DIGITAL_PIN, red);
   digitalWrite(GREEN_DIGITAL_PIN, green);
