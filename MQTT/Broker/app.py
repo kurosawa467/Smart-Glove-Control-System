@@ -11,12 +11,12 @@ class SensorMessageQueue:
     def __init__(self):
         time.sleep(0.0001)
 
-    def pushNewMessage(self, message):
+    def pushNewMessage(self, message, client):
         SensorMessageQueue.queue.put(message)
         print('Queue size is ' + str(SensorMessageQueue.queue.qsize()))
         print('Message has been pushed into queue')
         smartGloveControlSystem = SmartGloveControlSystem()
-        smartGloveControlSystem.handle_queue()
+        smartGloveControlSystem.handle_queue(client)
 
 class SmartGloveControlSystem:
     # IoT device command, placeholders for now
@@ -39,17 +39,17 @@ class SmartGloveControlSystem:
         # This is a placeholder format of the message
         # =>[float flex_1],[float flex_2],[float flex_3],[float flex_4],[float IMU_Quat],[float IMU_x],[float IMU_y],[float IMU_z]
         if raw_message.count('=') != 1 or raw_message.count('>') != 1:
-            self.logger.debug('Message is corrupted, sensor stats indicator missing')
+            print('Message is corrupted, sensor stats indicator missing')
             return
 
         # Strip message overhead before the => indicator (if any)
-        message = raw_message[raw_message.index('=>') + 2:].rstrip()
+        message = raw_message[raw_message.index('=>') + 2:].rstrip("'")
 
         # Might need to process ack, if we have one
 
         # Check if correct amount of sensor stats are included in the message
         if message.count(',') != 7:
-            self.logger.debug('Message is corrupted, not correct amount of stats included')
+            print('Message is corrupted, not correct amount of stats included')
             return
 
         tokens = message.split(',')
@@ -58,20 +58,20 @@ class SmartGloveControlSystem:
         pitch = float(tokens[6])
         ledDim = int(100 * (roll + 180) / 360)
         color = int(16 * (pitch + 180) / 360) % 8
-        outgoing_message = str(color) + str(ledDim)
+        outgoing_message = str(color) + ' ' + str(ledDim)
         # topic to be modified
-        topic_1_1 = int(tokens[0])
-        topic_1_2 = int(tokens[1])
-        topic_2_1 = int(tokens[2])
-        topic_2_2 = int(tokens[3])
-        if topic_1_1:
-            client.publish(self.IoTTopic.LED_1_ANALOG_TOPIC, outgoing_message)
-        if topic_1_2:
-            client.publish(self.IoTTopic.LED_1_DIGITAL_TOPIC, outgoing_message)
-        if topic_2_1:
-            client.publish(self.IoTTopic.LED_2_ANALOG_TOPIC, outgoing_message)
-        if topic_2_2:
-            client.publish(self.IoTTopic.LED_2_DIGITAL_TOPIC, outgoing_message)
+        flex_1_1 = int(tokens[0])
+        flex_1_2 = int(tokens[1])
+        flex_2_1 = int(tokens[2])
+        flex_2_2 = int(tokens[3])
+        if flex_1_1:
+            client.publish('/esp8266/1.1', outgoing_message)
+        if flex_1_2:
+            client.publish('/esp8266/1.2', outgoing_message)
+        if flex_2_1:
+            client.publish('/esp8266/2.1', outgoing_message)
+        if flex_2_2:
+            client.publish('/esp8266/2.2', outgoing_message)
         
     def handle_queue(self, client):
         queue = SensorMessageQueue.queue

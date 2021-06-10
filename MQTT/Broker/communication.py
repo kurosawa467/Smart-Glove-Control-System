@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 from app import SensorMessageQueue, SmartGloveControlSystem
 
-MQTT_ADDRESS = '192.168.0.12'
+MQTT_ADDRESS = '192.168.178.27'
 MQTT_USER = 'mosquitto'
 MQTT_PASSWORD = 'mosquitto'
 GLOVE_TOPIC = '/esp32/glove'
@@ -16,7 +16,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
   print('Message topic: ' + msg.topic + ', message payload: ' + str(msg.payload))
-  SensorMessageQueue().pushNewMessage(str(msg.payload))
+  SensorMessageQueue().pushNewMessage(str(msg.payload), client)
   SmartGloveControlSystem().handle_queue(client)
 
 def main():
