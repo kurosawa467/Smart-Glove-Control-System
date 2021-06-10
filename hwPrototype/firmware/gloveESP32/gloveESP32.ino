@@ -138,6 +138,7 @@ void sendMessage() {
   String senRoll=String(ypr.roll);
   //String message = "fingerAngle:"+fAng+",imuStatus:"+senStat+",yaw:"+senYaw+",pitch:"+senPitch+",roll:"+senRoll;
   String message = "=>"+fAng+","+senStat+","+senYaw+","+senPitch+","+senRoll;
+  Serial.println(message);
   
   char* flexDetectionMessage = const_cast<char*>(message.c_str());
   if (client.publish(flex_topic, flexDetectionMessage)) {
@@ -190,5 +191,5 @@ void loop(){
   //Serial.println("Bend: " + String(angle) + " degrees");
   //Serial.println();
 
-  delay(500);
+  delay(100);
 }

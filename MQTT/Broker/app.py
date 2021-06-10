@@ -20,13 +20,11 @@ class SensorMessageQueue:
 
 class SmartGloveControlSystem:
     # IoT device command, placeholders for now
-    class IoTCommand(Enum):
-        turn_on_LED_1 = 0
-        turn_on_LED_2 = 1
-        turn_on_LED_3 = 2
-        turn_off_LED_1 = 3
-        turn_off_LED_2 = 4
-        turn_off_LED_3 = 5
+    class IoTTopic(Enum):
+        LED_1_ANALOG_TOPIC = '/esp8266/1.1'
+        LED_1_DIGITAL_TOPIC = '/esp8266/1.2'
+        LED_2_ANALOG_TOPIC = '/esp8266/2.1'
+        LED_2_DIGITAL_TOPIC = '/esp8266/2.2'
 
     def __init__(self):
         # raw_data_buffer stores raw data directly parsed from sensor data
@@ -37,8 +35,7 @@ class SmartGloveControlSystem:
     def start_looping(self):
         self.handle_queue()
    
-    def handle_message(self, raw_message):
-
+    def handle_message(self, raw_message, client):
         # This is a placeholder format of the message
         # =>[float flex_1],[float flex_2],[float flex_3],[float flex_4],[float IMU_Quat],[float IMU_x],[float IMU_y],[float IMU_z]
         if raw_message.count('=') != 1 or raw_message.count('>') != 1:
@@ -57,8 +54,26 @@ class SmartGloveControlSystem:
 
         tokens = message.split(',')
         print(tokens)
-   
-    def handle_queue(self):
+        roll = float(tokens[7])
+        pitch = float(tokens[6])
+        ledDim = int(100 * (roll + 180) / 360)
+        color = int(16 * (pitch + 180) / 360) % 8
+        outgoing_message = str(color) + str(ledDim)
+        # topic to be modified
+        topic_1_1 = int(tokens[0])
+        topic_1_2 = int(tokens[1])
+        topic_2_1 = int(tokens[2])
+        topic_2_2 = int(tokens[3])
+        if topic_1_1:
+            client.publish(self.IoTTopic.LED_1_ANALOG_TOPIC, outgoing_message)
+        if topic_1_2:
+            client.publish(self.IoTTopic.LED_1_DIGITAL_TOPIC, outgoing_message)
+        if topic_2_1:
+            client.publish(self.IoTTopic.LED_2_ANALOG_TOPIC, outgoing_message)
+        if topic_2_2:
+            client.publish(self.IoTTopic.LED_2_DIGITAL_TOPIC, outgoing_message)
+        
+    def handle_queue(self, client):
         queue = SensorMessageQueue.queue
         print('Checking message queue')
         
@@ -72,14 +87,4 @@ class SmartGloveControlSystem:
 
         while not queue.empty():
             message = queue.get()
-            self.handle_message(message)
-
-#def main():
-#    while True:
-#        time.sleep(1)
-#        smartGloveControlSystem = SmartGloveControlSystem()
-#        smartGloveControlSystem.handle_queue()
-#
-#if __name__ == '__main__':
-#  print('main function started')
-#  main()
+            self.handle_message(message, client)
