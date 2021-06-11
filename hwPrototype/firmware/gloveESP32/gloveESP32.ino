@@ -121,12 +121,12 @@ void setup(){
   connect_WiFi();
   connect_MQTT();
 
-  //Serial.println("Adafruit BNO08x test!");
+  Serial.println("Adafruit BNO08x test!");
   if (!bno08x.begin_I2C()) {// Try to initialize!
-    //Serial.println("Failed to find BNO08x chip");
+    Serial.println("Failed to find BNO08x chip");
     while (1) { delay(10); }
   }
-  //Serial.println("BNO08x Found!");
+  Serial.println("BNO08x Found!");
   setReports(reportType, reportIntervalUs);
 }
 
@@ -139,7 +139,7 @@ void sendMessage() {
   if (getFingerAngle(adc1) >= 100) {
     fAng1 = "1";
   }
-  if (getFingerAngle(adc2) >= 100) {
+  if (getFingerAngle(adc2) >= 50) {
     fAng2 = "1";
   }
   String senStat = String(sensorValue.status);
@@ -190,6 +190,7 @@ void loop(){
   ////////////
   
   if (!client.connected()) {
+    Serial.println("test1");
     connect_MQTT();
   }
   client.loop();
