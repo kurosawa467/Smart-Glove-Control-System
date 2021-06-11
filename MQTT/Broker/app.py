@@ -13,7 +13,7 @@ class SensorMessageQueue:
 
     def pushNewMessage(self, message, client):
         SensorMessageQueue.queue.put(message)
-        print('Queue size is ' + str(SensorMessageQueue.queue.qsize()))
+        #print('Queue size is ' + str(SensorMessageQueue.queue.qsize()))
         print('Message has been pushed into queue')
         smartGloveControlSystem = SmartGloveControlSystem()
         smartGloveControlSystem.handle_queue(client)
@@ -56,9 +56,18 @@ class SmartGloveControlSystem:
         print(tokens)
         roll = float(tokens[7])
         pitch = float(tokens[6])
-        ledDim = int(100 * (roll + 180) / 360)
-        color = int(16 * (pitch + 180) / 360) % 8
+        yaw = float(tokens[5])
+        #ledDim = int(100 * (roll + 180) / 360)
+        ledDim = int(-200 * (roll - 180) / 360)
+        if ledDim > 100:
+            if ledDim >150:
+                ledDim = 0
+            else:
+                ledDim = 100
+        #color = int(18 * (pitch + 180) / 360) % 9
+        color = int(18 * (pitch + 180) / 360) % 9
         outgoing_message = str(color) + ' ' + str(ledDim)
+        print(outgoing_message)
         # topic to be modified
         flex_1_1 = int(tokens[0])
         flex_1_2 = int(tokens[1])
