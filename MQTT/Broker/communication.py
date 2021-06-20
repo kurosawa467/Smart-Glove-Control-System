@@ -19,7 +19,7 @@ def on_message(client, userdata, msg):
   SensorMessageQueue().pushNewMessage(str(msg.payload), client)
   SmartGloveControlSystem().handle_queue(client)
 
-def main():
+def main(): 
   mqtt_client = mqtt.Client()
   mqtt_client.username_pw_set(MQTT_USER, MQTT_PASSWORD)
   mqtt_client.on_connect = on_connect

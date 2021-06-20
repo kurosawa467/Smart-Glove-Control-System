@@ -4,6 +4,7 @@ from serial import Serial, SerialException
 import logging
 import queue
 import time
+import csv
 
 class SensorMessageQueue:
     queue = queue.Queue()
@@ -54,9 +55,11 @@ class SmartGloveControlSystem:
 
         tokens = message.split(',')
         print(tokens)
-        roll = float(tokens[7])
-        pitch = float(tokens[6])
+        imuStatus = int(tokens[4])
         yaw = float(tokens[5])
+        pitch = float(tokens[6])
+        roll = float(tokens[7])
+
         #ledDim = int(100 * (roll + 180) / 360)
         ledDim = int(-200 * (roll - 180) / 360)
         if ledDim > 100:
@@ -64,8 +67,11 @@ class SmartGloveControlSystem:
                 ledDim = 0
             else:
                 ledDim = 100
-        #color = int(18 * (pitch + 180) / 360) % 9
-        color = int(18 * (pitch + 180) / 360) % 9
+        #color = int(16 * (pitch + 180) / 360) % 8
+                
+        color = int((pitch * 4)/70) +4
+        if color <0: color = 0
+        if color >8: color = 8
         outgoing_message = str(color) + ' ' + str(ledDim)
         print(outgoing_message)
         # topic to be modified
@@ -81,6 +87,12 @@ class SmartGloveControlSystem:
             client.publish('/esp8266/2.1', outgoing_message)
         if flex_2_2:
             client.publish('/esp8266/2.2', outgoing_message)
+        
+        timestamp = time.monotonic()#time.strftime("%d/%m/%Y %H:%M:%S", time.localtime())
+        print(timestamp)
+        f = open("data.txt", "a")
+        f.write("{0},{1},{2},{3},{4}\n".format(timestamp,imuStatus,yaw,pitch,roll))
+        f.close()
         
     def handle_queue(self, client):
         queue = SensorMessageQueue.queue
