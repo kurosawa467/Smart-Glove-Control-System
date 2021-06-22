@@ -5,7 +5,6 @@ import csv
 import errno
 import datetime
 import pandas
-from app import SensorMessageQueue, SmartGloveControlSystem
 
 MQTT_ADDRESS = '192.168.178.100'
 MQTT_USER = 'mosquitto'
