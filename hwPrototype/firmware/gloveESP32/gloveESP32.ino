@@ -27,6 +27,8 @@ ESP32AnalogRead adc2;
 #define ADC_BITS 12
 const int FINGER_PIN_1 = 32; // Pin connected to voltage divider output
 const int FINGER_PIN_2 = 33; // Pin connected to voltage divider output
+const int FINGER_PIN_3 = 34; // Pin connected to voltage divider output
+const int FINGER_PIN_4 = 35; // Pin connected to voltage divider output
 
 //const float ADC_SYSTEM_VCC = 5.0; // this is irrelevant of the flex sensor voltage supply
 const float FLEX_VCC = 3.3;//this is the for the voltage supply of the flex sensor
@@ -147,7 +149,9 @@ void sendMessage() {
   String senPitch = String(ypr.pitch);
   String senRoll=String(ypr.roll);
   //String message = "fingerAngle:"+fAng+",imuStatus:"+senStat+",yaw:"+senYaw+",pitch:"+senPitch+",roll:"+senRoll;
-  String message = "=>"+fAng1+","+fAng+","+fAng2+","+fAng+","+senStat+","+senYaw+","+senPitch+","+senRoll;
+  //String message = "=>"+fAng1+","+fAng+","+fAng2+","+fAng+","+senStat+","+senYaw+","+senPitch+","+senRoll;
+  String message = "=>"+String(getFingerAngle(adc1))+","+String(getFingerAngle(adc2))+","+String(getFingerAngle(adc2))+","+String(getFingerAngle(adc2))+","+senStat+","+senYaw+","+senPitch+","+senRoll;
+  Serial.println(message);
   
   char* flexDetectionMessage = const_cast<char*>(message.c_str());
   if (client.publish(glove_topic, flexDetectionMessage)) {
