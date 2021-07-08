@@ -13,38 +13,59 @@ GLOVE_TOPIC = '/esp32/glove'
 dim = 50
 direction = 1
 encoding = 'utf-8'
-index = 0
-filename = ''
 gesture = 'gesture'
 header = ["timestamp", "flex_1", "flex_2", "flex_3", "flex_4", "IMU_status", "yaw", "pitch", "row"]
 start_time = 0
 sensor_data = []
+filename_prefix = 'gesture_'
+filename_index = 0
+message_index = 0
 
 def on_connect(client, userdata, flags, rc):
-  global filename
   print('Connected with ESP32, result: ' + str(rc))
   client.subscribe(GLOVE_TOPIC)
-  filename = input("Filename: ")
   print(start_time)
 
 def on_message(client, userdata, msg):
-  global filename
-  global index
   global start_time
+  global message_index
+  global filename_index
   print('Message topic: ' + msg.topic + ', message payload: ' + str(msg.payload))
   raw_message = str(msg.payload)
   message = raw_message[raw_message.index('=>') + 2:].rstrip("'")
   tokens = message.split(',')
-  if start_time == 0:
-    start_time = datetime.datetime.now()
+
+  # Here decides when to start recording gesture
+  if True:
+    if message_index == 0:
+      print('Start to recognize gesture')
+    if message_index < 24:
+      write_to_matrix(tokens)
+      message_index += 1
+    if message_index == 24:
+      get_gesture_prediction(filename_index)
+      message_index = 0
+      filename_index += 1
+
+def write_to_matrix(tokens):
   current_time = (datetime.datetime.now() - start_time).total_seconds() * 1000
-  print(current_time)
   row = [current_time]
   row += tokens
   sensor_data.append(row)
-  if current_time > 2000:
-    dataframe = pandas.DataFrame(sensor_data, columns = header)
-    dataframe.to_csv(gesture + '/' + filename, header = True)
+
+def write_to_csv():
+  dataframe = pandas.DataFrame(sensor_data, columns = header)
+  dataframe.to_csv('user/gesture_' + filename_index + '.csv', header = True)
+  gesture = get_machine_learning_prediction()
+  
+
+def get_machine_learning_prediction(filename):
+  gesture = ''
+
+def get_gesture_prediction(tokens):
+  write_to_csv(tokens)
+  gesture = get_machine_learning_prediction('user/gesture_' + filename_index + '.csv')
+  command = ''
 
 def main(): 
   mqtt_client = mqtt.Client()
