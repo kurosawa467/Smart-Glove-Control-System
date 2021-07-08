@@ -5,6 +5,7 @@ import csv
 import errno
 import datetime
 import pandas
+from training import SVMModel
 
 MQTT_ADDRESS = '192.168.178.100'
 MQTT_USER = 'mosquitto'
@@ -20,11 +21,17 @@ sensor_data = []
 filename_prefix = 'gesture_'
 filename_index = 0
 message_index = 0
+svmModel = None
 
 def on_connect(client, userdata, flags, rc):
+  global svmModel
   print('Connected with ESP32, result: ' + str(rc))
   client.subscribe(GLOVE_TOPIC)
   print(start_time)
+  svmModel = SVMModel()
+  accuracy = svmModel.training()
+  print('SVM model is ready, initial accuracy is ' + accuracy)
+
 
 def on_message(client, userdata, msg):
   global start_time
@@ -55,16 +62,14 @@ def write_to_matrix(tokens):
 
 def write_to_csv():
   dataframe = pandas.DataFrame(sensor_data, columns = header)
-  dataframe.to_csv('user/gesture_' + filename_index + '.csv', header = True)
-  gesture = get_machine_learning_prediction()
-  
+  dataframe.to_csv('Project/user/gesture_' + filename_index + '.csv', header = True)
 
-def get_machine_learning_prediction(filename):
-  gesture = ''
+def get_machine_learning_prediction():
+  return svmModel.get_gesture_prediction('Project/user/gesture_' + filename_index + '.csv')
 
 def get_gesture_prediction(tokens):
   write_to_csv(tokens)
-  gesture = get_machine_learning_prediction('user/gesture_' + filename_index + '.csv')
+  gesture = get_machine_learning_prediction()
   command = ''
 
 def main(): 

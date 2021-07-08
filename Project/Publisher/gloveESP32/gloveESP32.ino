@@ -205,5 +205,5 @@ void loop(){
   //Serial.println("Bend: " + String(angle) + " degrees");
   //Serial.println();
 
-  delay(100);
+  delay(50);
 }
