@@ -26,6 +26,7 @@ class SmartGloveControlSystem:
         LED_1_DIGITAL_TOPIC = '/esp8266/1.2'
         LED_2_ANALOG_TOPIC = '/esp8266/2.1'
         LED_2_DIGITAL_TOPIC = '/esp8266/2.2'
+        JS_APP = 'JS_APP'
 
     def __init__(self):
         # raw_data_buffer stores raw data directly parsed from sensor data
@@ -75,10 +76,10 @@ class SmartGloveControlSystem:
         outgoing_message = str(color) + ' ' + str(ledDim)
         print(outgoing_message)
         # topic to be modified
-        flex_1_1 = int(tokens[0])
-        flex_1_2 = int(tokens[1])
-        flex_2_1 = int(tokens[2])
-        flex_2_2 = int(tokens[3])
+        flex_1_1 = int(float(tokens[0]))
+        flex_1_2 = int(float(tokens[1]))
+        flex_2_1 = int(float(tokens[2]))
+        flex_2_2 = int(float(tokens[3]))
         if flex_1_1:
             client.publish('/esp8266/1.1', outgoing_message)
         if flex_1_2:
@@ -87,6 +88,7 @@ class SmartGloveControlSystem:
             client.publish('/esp8266/2.1', outgoing_message)
         if flex_2_2:
             client.publish('/esp8266/2.2', outgoing_message)
+        client.publish('JS_APP', outgoing_message)
         
         timestamp = time.monotonic()#time.strftime("%d/%m/%Y %H:%M:%S", time.localtime())
         print(timestamp)

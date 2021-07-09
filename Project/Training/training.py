@@ -6,6 +6,7 @@ from pandas.io.parsers import read_csv
 from itertools import chain
 from sklearn import svm, metrics
 from sklearn.model_selection import train_test_split
+import pickle
 
 class SVMModel:
     sensor_data_matrix = np.zeros([100, 90] )
@@ -41,8 +42,15 @@ class SVMModel:
         X_train, X_test, y_train, y_test = train_test_split(SVMModel.sensor_data_matrix, target, test_size=0.3, random_state=57)
         SVMModel.classifier.fit(X_train, y_train)
         y_prediction = SVMModel.classifier.predict(X_test)
+        
+        filename = 'svm_model.sav'
+        pickle.dump(SVMModel.classifier, open(filename, 'wb'))
+        
+        #loaded_model = pickle.load(open(filename, 'rb'))
+        #y_prediction2 = loaded_model.predict(X_test)
 
         print("Accuracy is ", metrics.accuracy_score(y_test, y_prediction))
+        #print("Accuracy is ", metrics.accuracy_score(y_test, y_prediction2))
         return metrics.accuracy_score(y_test, y_prediction)
 
     def read_data_from_csv(self, gesture, index_offset):
