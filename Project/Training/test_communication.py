@@ -15,46 +15,72 @@ dim = 50
 direction = 1
 encoding = 'utf-8'
 gesture = 'gesture'
-header = ["timestamp", "flex_1", "flex_2", "flex_3", "flex_4", "IMU_status", "yaw", "pitch", "row"]
+header = ["timestamp", "yaw", "pitch", "row"]
 start_time = 0
 sensor_data = []
 filename_prefix = 'gesture_'
 filename_index = 0
 message_index = 0
 svmModel = None
+gesture_mode = False
 
 def on_connect(client, userdata, flags, rc):
   global svmModel
+  global start_time
   print('Connected with ESP32, result: ' + str(rc))
   client.subscribe(GLOVE_TOPIC)
+  if start_time == 0:
+    start_time = datetime.datetime.now()
   print(start_time)
   svmModel = SVMModel()
   accuracy = svmModel.training()
-  print('SVM model is ready, initial accuracy is ' + accuracy)
+  print('SVM model is ready, initial accuracy is ' + str(accuracy))
 
 
 def on_message(client, userdata, msg):
   global start_time
   global message_index
   global filename_index
-  print('Message topic: ' + msg.topic + ', message payload: ' + str(msg.payload))
+  global gesture_mode
+  global sensor_data
+  # print('Message topic: ' + msg.topic + ', message payload: ' + str(msg.payload))
   raw_message = str(msg.payload)
   message = raw_message[raw_message.index('=>') + 2:].rstrip("'")
   tokens = message.split(',')
 
   # Here decides when to start recording gesture
-  if True:
+  if not gesture_mode:
+      if int(float(tokens[2])) > 40:
+          gesture_mode = True
+
+  if gesture_mode:
     if message_index == 0:
       print('Start to recognize gesture')
-    if message_index < 24:
-      write_to_matrix(tokens)
+      sensor_data = []
+    if message_index < 30:
+      write_to_matrix(tokens[5:8])
       message_index += 1
-    if message_index == 24:
-      get_gesture_prediction(filename_index)
+    if message_index == 30:
+      gesture = get_gesture_prediction()
+      print(gesture)
+      command = ''
+      if int(float(tokens[1])) > 40:
+          if gesture == 1:
+              command = 'next device'
+          elif gesture == 0:
+              command = 'previous device'
+      elif int(float(tokens[1])) <= 40:
+          if gesture == 1:
+              command = 'next color'
+          elif gesture == 0:
+              command = 'previous color'
+      print('Recognized command is: ' + command)
       message_index = 0
       filename_index += 1
+      gesture_mode = False
 
 def write_to_matrix(tokens):
+  global sensor_data
   current_time = (datetime.datetime.now() - start_time).total_seconds() * 1000
   row = [current_time]
   row += tokens
@@ -62,15 +88,14 @@ def write_to_matrix(tokens):
 
 def write_to_csv():
   dataframe = pandas.DataFrame(sensor_data, columns = header)
-  dataframe.to_csv('Project/user/gesture_' + filename_index + '.csv', header = True)
+  dataframe.to_csv('user/gesture_' + str(filename_index) + '.csv', header = True)
 
 def get_machine_learning_prediction():
-  return svmModel.get_gesture_prediction('Project/user/gesture_' + filename_index + '.csv')
+  return svmModel.get_gesture_prediction('user/gesture_' + str(filename_index) + '.csv')
 
-def get_gesture_prediction(tokens):
-  write_to_csv(tokens)
-  gesture = get_machine_learning_prediction()
-  command = ''
+def get_gesture_prediction():
+  write_to_csv()
+  return get_machine_learning_prediction()
 
 def main(): 
   mqtt_client = mqtt.Client()

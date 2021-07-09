@@ -8,28 +8,22 @@ from sklearn import svm, metrics
 from sklearn.model_selection import train_test_split
 
 class SVMModel:
-    sensor_data_matrix = np.zeros([100, 184])
+    sensor_data_matrix = np.zeros([100, 90] )
     classifier = svm.SVC(kernel = 'linear')
 
     def get_gesture_prediction(self, filename):
         sensor_data = pandas.read_csv(filename, header = 0)
-        sensor_data = sensor_data[0:23]
-        row = np.concatenate((np.array(sensor_data['flex_1']).T,
-                              np.array(sensor_data['flex_2']).T,
-                              np.array(sensor_data['flex_3']).T,
-                              np.array(sensor_data['flex_4']).T,
-                              np.array(sensor_data['IMU_status']).T,
-                              np.array(sensor_data['yaw']).T,
+        row = np.concatenate((np.array(sensor_data['yaw']).T,
                               np.array(sensor_data['pitch']).T,
                               np.array(sensor_data['row']).T), axis = 0)
-        user_sensor_data_matrix = np.zeros([1, 184])
+        user_sensor_data_matrix = np.zeros([1, 90])
         user_sensor_data_matrix[0, :] = row
         prediction = SVMModel.classifier.predict(user_sensor_data_matrix)
         return prediction[0]
 
     def training(self):
-        self.read_data_from_csv("gesture", 0)
-        self.read_data_from_csv("noise", 1)
+        self.read_data_from_csv("left", 0)
+        self.read_data_from_csv("right", 1)
 
         # hardcoded target for gesture labeling. "gesture" is 1, "noise" is 0
         target = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -44,9 +38,6 @@ class SVMModel:
                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
         X_train, X_test, y_train, y_test = train_test_split(SVMModel.sensor_data_matrix, target, test_size=0.3, random_state=57)
-        print(X_test)
-        print(len(X_test))
-        print(len(X_test[0]))
         SVMModel.classifier.fit(X_train, y_train)
         y_prediction = SVMModel.classifier.predict(X_test)
 
@@ -55,15 +46,9 @@ class SVMModel:
 
     def read_data_from_csv(self, gesture, index_offset):
         index = 0 + 50 * index_offset
-        for file in glob.glob("Project/Training/" + gesture + "/*.csv"):
+        for file in glob.glob("/home/pi/smart-glove-control-system/Project/Training/" + gesture + "/*.csv"):
             sensor_data = pandas.read_csv(file, header = 0)
-            sensor_data = sensor_data[0:23]
-            row = np.concatenate((np.array(sensor_data['flex_1']).T,
-                                  np.array(sensor_data['flex_2']).T,
-                                  np.array(sensor_data['flex_3']).T,
-                                  np.array(sensor_data['flex_4']).T,
-                                  np.array(sensor_data['IMU_status']).T,
-                                  np.array(sensor_data['yaw']).T,
+            row = np.concatenate((np.array(sensor_data['yaw']).T,
                                   np.array(sensor_data['pitch']).T,
                                   np.array(sensor_data['row']).T), axis = 0)
             SVMModel.sensor_data_matrix[index, :] = row

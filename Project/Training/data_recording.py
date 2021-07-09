@@ -15,17 +15,19 @@ direction = 1
 encoding = 'utf-8'
 index = 0
 filename = ''
-gesture = 'noise'
-header = ["timestamp", "flex_1", "flex_2", "flex_3", "flex_4", "IMU_status", "yaw", "pitch", "row"]
+gesture = 'right'
+header = ["timestamp", "yaw", "pitch", "row"]
 start_time = 0
 sensor_data = []
 
 def on_connect(client, userdata, flags, rc):
   global filename
+  global index
   print('Connected with ESP32, result: ' + str(rc))
   client.subscribe(GLOVE_TOPIC)
   filename = input("Filename: ")
   print(start_time)
+  index = 0
 
 def on_message(client, userdata, msg):
   global filename
@@ -39,10 +41,12 @@ def on_message(client, userdata, msg):
     start_time = datetime.datetime.now()
   current_time = (datetime.datetime.now() - start_time).total_seconds() * 1000
   print(current_time)
+  print(index)
   row = [current_time]
-  row += tokens
+  row += tokens[5:8]
   sensor_data.append(row)
-  if current_time > 2000:
+  index += 1
+  if index == 30:
     dataframe = pandas.DataFrame(sensor_data, columns = header)
     dataframe.to_csv(gesture + '/' + filename, header = True)
 
