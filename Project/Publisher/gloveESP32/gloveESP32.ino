@@ -24,6 +24,8 @@ PubSubClient client(mqtt_server, 1883, wifiClient);
 // Constants for IMU sensor and flex sensor
 ESP32AnalogRead adc1;
 ESP32AnalogRead adc2;
+ESP32AnalogRead adc3;
+ESP32AnalogRead adc4;
 #define ADC_BITS 12
 const int FINGER_PIN_1 = 32; // Pin connected to voltage divider output
 const int FINGER_PIN_2 = 33; // Pin connected to voltage divider output
@@ -118,6 +120,8 @@ float getFingerAngle(ESP32AnalogRead adc){ //TODO add multi finger support
 void setup(){
   adc1.attach(FINGER_PIN_1);
   adc2.attach(FINGER_PIN_2);
+  adc3.attach(FINGER_PIN_3);
+  adc4.attach(FINGER_PIN_4);
   Serial.begin(115200);
   //pinMode(FINGER_PIN_1, INPUT);
   connect_WiFi();
@@ -150,7 +154,7 @@ void sendMessage() {
   String senRoll=String(ypr.roll);
   //String message = "fingerAngle:"+fAng+",imuStatus:"+senStat+",yaw:"+senYaw+",pitch:"+senPitch+",roll:"+senRoll;
   //String message = "=>"+fAng1+","+fAng+","+fAng2+","+fAng+","+senStat+","+senYaw+","+senPitch+","+senRoll;
-  String message = "=>"+String(getFingerAngle(adc1))+","+String(getFingerAngle(adc2))+","+String(getFingerAngle(adc2))+","+String(getFingerAngle(adc2))+","+senStat+","+senYaw+","+senPitch+","+senRoll;
+  String message = "=>"+String(getFingerAngle(adc1))+","+String(getFingerAngle(adc2))+","+String(getFingerAngle(adc3))+","+String(getFingerAngle(adc4))+","+senStat+","+senYaw+","+senPitch+","+senRoll;
   Serial.println(message);
   
   char* flexDetectionMessage = const_cast<char*>(message.c_str());

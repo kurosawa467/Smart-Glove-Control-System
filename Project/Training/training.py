@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 
 class SVMModel:
     sensor_data_matrix = np.zeros([100, 90] )
-    classifier = svm.SVC(kernel = 'linear')
+    classifier = svm.SVC(kernel = 'poly')
 
     def get_gesture_prediction(self, filename):
         sensor_data = pandas.read_csv(filename, header = 0)
@@ -19,6 +19,7 @@ class SVMModel:
         user_sensor_data_matrix = np.zeros([1, 90])
         user_sensor_data_matrix[0, :] = row
         prediction = SVMModel.classifier.predict(user_sensor_data_matrix)
+        print(prediction[0])
         return prediction[0]
 
     def training(self):
