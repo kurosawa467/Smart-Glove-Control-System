@@ -48,7 +48,7 @@ def on_message(client, userdata, msg):
   message = raw_message[raw_message.index('=>') + 2:].rstrip("'")
   tokens = message.split(',')
 
-  hand = get_finger_positions(tokens[:3])
+  hand = get_finger_positions(tokens[:4])
 
   # Here decides when to start recording gesture
   if not gesture_mode:
@@ -101,7 +101,7 @@ def get_gesture_prediction():
 
 #hand position is decoded as 4 bit using the pinkie finger as the most significant bit
 def get_finger_positions(fingers):
-  hand = (1 if int(float(fingers[0])) <= 40 else 0) + (2 if int(float(fingers[1])) <= 40 else 0) + (1 if int(float(fingers[2])) <= 40 else 0) + (1 if int(float(fingers[3])) <= 40 else 0)
+  hand = (1 if int(float(fingers[0])) <= 40 else 0) + (2 if int(float(fingers[1])) <= 40 else 0) + (4 if int(float(fingers[2])) <= 40 else 0) + (8 if int(float(fingers[3])) <= 40 else 0)
   return hand
 
 
