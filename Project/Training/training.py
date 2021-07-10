@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 import pickle
 from sklearn.tree import export_graphviz
 import pydot
+import os
 
 class SVMModel:
     sensor_data_matrix = np.zeros([100, 90])
@@ -31,21 +32,22 @@ class SVMModel:
         self.read_data_from_csv("left", 0)
         self.read_data_from_csv("right", 1)
 
-        # hardcoded target for gesture labeling. "gesture" is 1, "noise" is 0
+        # hardcoded target for gesture labeling. left swiping is 1, right swiping is 2
         target = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+                           2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                           2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                           2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                           2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                           2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
 
-        X_train, X_test, y_train, y_test = train_test_split(SVMModel.sensor_data_matrix, target, test_size=0.3, random_state=57)
+        X_train, X_test, y_train, y_test = train_test_split(SVMModel.sensor_data_matrix, target, test_size=0.3, random_state=42)
         SVMModel.classifier.fit(X_train, y_train)
         y_prediction = SVMModel.classifier.predict(X_test)
+        print("SVM accuracy is ", metrics.accuracy_score(y_test, y_prediction))
 
         # Random Forest
         train_features, test_features, train_labels, test_labels = train_test_split(SVMModel.sensor_data_matrix, target, 
@@ -59,21 +61,18 @@ class SVMModel:
         print('Mean Absolute Error is: ', round(np.mean(errors), 2), '.')
         mape = 100 * (errors / test_labels)
         accuracy = 100 - np.mean(mape)
-        print('Accuracy is :', round(accuracy, 2), '%.')
+        print('Random forest accuracy is :', round(accuracy, 2), '%.')
 
-        tree = rf.estimators_[5]
-        export_graphviz(tree, out_file = 'tree.dot', feature_names = ['yaw', 'pitch', 'row'], rounded = True, precision = 1)
-        (graph, ) = pydot.graph_from_dot_file('tree.dot')
-        graph.write_png('tree.png')
+        #tree = rf.estimators_[5]
+        #export_graphviz(tree, out_file = 'tree.dot', rounded = True, precision = 1)
+        #(graph, ) = pydot.graph_from_dot_file('tree.dot')
+        #graph.write_png('tree.png')
 
         filename = 'svm_model.sav'
         pickle.dump(SVMModel.classifier, open(filename, 'wb'))
         
         #loaded_model = pickle.load(open(filename, 'rb'))
         #y_prediction2 = loaded_model.predict(X_test)
-
-
-        print("Accuracy is ", metrics.accuracy_score(y_test, y_prediction))
         #print("Accuracy is ", metrics.accuracy_score(y_test, y_prediction2))
         return metrics.accuracy_score(y_test, y_prediction)
 

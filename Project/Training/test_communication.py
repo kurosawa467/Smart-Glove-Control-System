@@ -67,12 +67,12 @@ def on_message(client, userdata, msg):
       if int(float(tokens[1])) > 40:
           if gesture == 1:
               command = 'next device'
-          elif gesture == 0:
+          elif gesture == 2:
               command = 'previous device'
       elif int(float(tokens[1])) <= 40:
           if gesture == 1:
               command = 'next color'
-          elif gesture == 0:
+          elif gesture == 2:
               command = 'previous color'
       print('Recognized command is: ' + command)
       message_index = 0
