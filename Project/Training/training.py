@@ -6,10 +6,14 @@ from pandas.io.parsers import read_csv
 from itertools import chain
 from sklearn import svm, metrics
 from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
 import pickle
+from sklearn.tree import export_graphviz
+import pydot
 
 class SVMModel:
-    sensor_data_matrix = np.zeros([100, 90] )
+    sensor_data_matrix = np.zeros([100, 90])
     classifier = svm.SVC(kernel = 'poly')
 
     def get_gesture_prediction(self, filename):
@@ -42,12 +46,32 @@ class SVMModel:
         X_train, X_test, y_train, y_test = train_test_split(SVMModel.sensor_data_matrix, target, test_size=0.3, random_state=57)
         SVMModel.classifier.fit(X_train, y_train)
         y_prediction = SVMModel.classifier.predict(X_test)
-        
+
+        # Random Forest
+        train_features, test_features, train_labels, test_labels = train_test_split(SVMModel.sensor_data_matrix, target, 
+                                                                                    test_size = 0.25, random_state = 42)
+        rf = RandomForestRegressor(n_estimators=10)
+        rf.fit(train_features, train_labels)
+        predictions = rf.predict(test_features)
+        print(test_labels)
+        print(predictions)
+        errors = abs(predictions - test_labels)
+        print('Mean Absolute Error is: ', round(np.mean(errors), 2), '.')
+        mape = 100 * (errors / test_labels)
+        accuracy = 100 - np.mean(mape)
+        print('Accuracy is :', round(accuracy, 2), '%.')
+
+        tree = rf.estimators_[5]
+        export_graphviz(tree, out_file = 'tree.dot', feature_names = ['yaw', 'pitch', 'row'], rounded = True, precision = 1)
+        (graph, ) = pydot.graph_from_dot_file('tree.dot')
+        graph.write_png('tree.png')
+
         filename = 'svm_model.sav'
         pickle.dump(SVMModel.classifier, open(filename, 'wb'))
         
         #loaded_model = pickle.load(open(filename, 'rb'))
         #y_prediction2 = loaded_model.predict(X_test)
+
 
         print("Accuracy is ", metrics.accuracy_score(y_test, y_prediction))
         #print("Accuracy is ", metrics.accuracy_score(y_test, y_prediction2))
@@ -63,9 +87,11 @@ class SVMModel:
             SVMModel.sensor_data_matrix[index, :] = row
             index += 1
     
+    
 def main():
     print('main()')
-    SVMModel.training()
+    svmModel = SVMModel()
+    accuracy = svmModel.training()
     
 if __name__ == "__main__":
     main()
