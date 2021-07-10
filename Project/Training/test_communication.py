@@ -48,7 +48,7 @@ def on_message(client, userdata, msg):
   message = raw_message[raw_message.index('=>') + 2:].rstrip("'")
   tokens = message.split(',')
 
-  hand = get_finger_positions(tokens[:3])
+  hand = get_finger_positions(tokens[:4])
 
   # Here decides when to start recording gesture
   if not gesture_mode:
