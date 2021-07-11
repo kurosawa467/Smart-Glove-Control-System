@@ -16,4 +16,4 @@ def plot_for_one_csv(filename):
     plt.legend()
     plt.show()
     
-plot_for_one_csv('Project/Training/user/gesture_11.csv')
+plot_for_one_csv('left/left50.csv')
