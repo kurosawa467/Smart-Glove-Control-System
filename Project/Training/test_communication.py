@@ -27,17 +27,20 @@ message_index = 0
 start_time = 0
 rf = None
 rf_small = None
+decision_tree_regressor = None
 gesture_mode = 1
 
 def on_connect(client, userdata, flags, rc):
     global rf
     global rf_small
+    global decision_tree_regressor
     global start_time
     print('Connected with ESP32, result: ' + str(rc))
     client.subscribe(GLOVE_TOPIC)
     rf = pickle.load(open('random_forest.sav', 'rb'))
     rf_small = pickle.load(open('random_forest.sav', 'rb'))
-    print('Random forest model ready')
+    decision_tree_regressor = pickle.load(open('decision_tree_regressor.sav', 'rb'))
+    print('machine learning models ready')
     start_time = datetime.datetime.now()
     print()
 
@@ -130,12 +133,12 @@ def write_to_csv():
 
 def get_machine_learning_prediction():
     global sensor_data_matrix
-    global rf
+    global decision_tree_regressor
     user_sensor_data_matrix = []
     user_sensor_data_matrix.append(sensor_data_matrix)
     sensor_data_matrix = []
     # print("user_sensor_data_matrix", user_sensor_data_matrix)
-    prediction = rf.predict(user_sensor_data_matrix)
+    prediction = decision_tree_regressor.predict(user_sensor_data_matrix)
     return prediction[0]
 
 def get_gesture_prediction():

@@ -230,6 +230,9 @@ class SVMModel:
         print("Decision Tree Regressor takes", round(DTR_time, 4), "seconds")
         print()
         
+        rf_filename = 'decision_tree_regressor.sav'
+        pickle.dump(DTR_regression, open(rf_filename, 'wb'))
+        
         # Random Forest     
         # Normal tree
         random_forest_start_time = datetime.datetime.now()
