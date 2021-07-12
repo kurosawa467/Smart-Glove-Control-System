@@ -6,17 +6,22 @@ from pandas.io.parsers import read_csv
 from itertools import chain
 from sklearn import svm, metrics
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+from sklearn.svm import SVR
 import pickle
 import datetime
 
 class SVMModel:
     sensor_data_matrix = np.zeros([400, 90])
     classifier_linear = svm.SVC(kernel = 'linear')
-    classifier_poly = svm.SVC(kernel = 'poly')
     classifier_rbf = svm.SVC(kernel = 'rbf')
-    classifier_sigmoid = svm.SVC(kernel = 'sigmoid')
 
     def get_gesture_prediction(self, filename):
         sensor_data = pandas.read_csv(filename, header = 0)
@@ -58,6 +63,69 @@ class SVMModel:
                            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4])
 
         X_train, X_test, y_train, y_test = train_test_split(SVMModel.sensor_data_matrix, target, test_size=0.3, random_state=42)
+        
+        # Classification
+        # Logistic Regression
+        LR_start_time = datetime.datetime.now()
+        LR_classifier = LogisticRegression(random_state = 42)
+        LR_classifier.fit(X_train, y_train)
+        y_prediction = LR_classifier.predict(X_test)
+        accuracy = metrics.accuracy_score(y_test, y_prediction)
+        LR_end_time = datetime.datetime.now()
+        LR_time = (LR_end_time - LR_start_time).total_seconds()
+        print("Classification algorithms")
+        print("Logistic Regression accuracy is", round(accuracy * 100, 4), '%')
+        print("Logistic Regression takes", round(LR_time, 4), "seconds")
+        print()
+        
+        # Decision Tree Classifier
+        DTC_start_time = datetime.datetime.now()
+        DTC_classifier = DecisionTreeClassifier(random_state = 42)
+        DTC_classifier.fit(X_train, y_train)
+        y_prediction = DTC_classifier.predict(X_test)
+        accuracy = metrics.accuracy_score(y_test, y_prediction)
+        DTC_end_time = datetime.datetime.now()
+        DTC_time = (DTC_end_time - DTC_start_time).total_seconds()
+        print("Decision Tree Classifier accuracy is", round(accuracy * 100, 4), '%')
+        print("Decision Tree Classifier takes", round(DTC_time, 4), "seconds")
+        print()
+        
+        # KNeighbors Classifier
+        KNC_start_time = datetime.datetime.now()
+        KNC_classifier = KNeighborsClassifier()
+        KNC_classifier.fit(X_train, y_train)
+        y_prediction = KNC_classifier.predict(X_test)
+        accuracy = metrics.accuracy_score(y_test, y_prediction)
+        KNC_end_time = datetime.datetime.now()
+        KNC_time = (KNC_end_time - KNC_start_time).total_seconds()
+        print("KNeighbors Classifier accuracy is", round(accuracy * 100, 4), '%')
+        print("KNeighbors Classifier takes", round(KNC_time, 4), "seconds")
+        print()
+        
+        # Linear Discriminant Analysis
+        LDA_start_time = datetime.datetime.now()
+        LDA_classifier = LinearDiscriminantAnalysis()
+        LDA_classifier.fit(X_train, y_train)
+        y_prediction = LDA_classifier.predict(X_test)
+        accuracy = metrics.accuracy_score(y_test, y_prediction)
+        LDA_end_time = datetime.datetime.now()
+        LDA_time = (LDA_end_time - LDA_start_time).total_seconds()
+        print("Linear Discriminant Analysis accuracy is", round(accuracy * 100, 4), '%')
+        print("Linear Discriminant Analysis takes", round(LDA_time, 4), "seconds")
+        print()
+        
+        # Gaussian NB
+        GNB_start_time = datetime.datetime.now()
+        GNB_classifier = GaussianNB()
+        GNB_classifier.fit(X_train, y_train)
+        y_prediction = GNB_classifier.predict(X_test)
+        accuracy = metrics.accuracy_score(y_test, y_prediction)
+        GNB_end_time = datetime.datetime.now()
+        GNB_time = (GNB_end_time - GNB_start_time).total_seconds()
+        print("Gaussian NB accuracy is", round(accuracy * 100, 4), '%')
+        print("Gaussian NB takes", round(GNB_time, 4), "seconds")
+        print()
+        
         # SVM linear
         SVM_linear_start_time = datetime.datetime.now()
         SVMModel.classifier_linear.fit(X_train, y_train)
@@ -65,8 +133,8 @@ class SVMModel:
         accuracy = metrics.accuracy_score(y_test, y_prediction)
         SVM_linear_end_time = datetime.datetime.now()
         SVM_linear_time = (SVM_linear_end_time - SVM_linear_start_time).total_seconds()
-        print("SVM linear kernel accuracy is:", round(accuracy * 100, 4), '%')
-        print("SVM linear kernel takes ", round(SVM_linear_time, 4), "seconds")
+        print("SVM linear kernel accuracy is", round(accuracy * 100, 4), '%')
+        print("SVM linear kernel takes", round(SVM_linear_time, 4), "seconds")
         print()
         
         # SVM rbf
@@ -76,14 +144,93 @@ class SVMModel:
         accuracy = metrics.accuracy_score(y_test, y_prediction)
         SVM_non_linear_end_time = datetime.datetime.now()
         SVM_non_linear_time = (SVM_non_linear_end_time - SVM_non_linear_start_time).total_seconds()
-        print("SVM non-linear (rbf) kernel accuracy is:", round(accuracy * 100, 4), '%')
-        print("SVM non-linear kernel takes ", round(SVM_non_linear_time, 4), "seconds")
+        print("SVM non-linear (rbf) kernel accuracy is", round(accuracy * 100, 4), '%')
+        print("SVM non-linear kernel takes", round(SVM_non_linear_time, 4), "seconds")
         print()
         
-        # Random Forest
+        # Regression
+        print("Regression algorithms")
         train_features, test_features, train_labels, test_labels = train_test_split(SVMModel.sensor_data_matrix, target, 
                                                                                     test_size = 0.3, random_state = 42)
+        # Linear Regression
+        LR_start_time = datetime.datetime.now()
+        LR_regression = LinearRegression()
+        LR_regression.fit(train_features, train_labels)
+        predictions = LR_regression.predict(test_features)
+        errors = abs(predictions - test_labels)
+        mape = 100 * (errors / test_labels)
+        accuracy = 100 - np.mean(mape)
+        LR_end_time = datetime.datetime.now()
+        LR_time = (LR_end_time - LR_start_time).total_seconds()
+        print("Linear Regression accuracy is", round(accuracy, 4), '%')
+        print("Linear Regression takes", round(SVM_non_linear_time, 4), "seconds")
+        print()
         
+        # Polynomial Regression
+        # PR_start_time = datetime.datetime.now()
+        # poly = PolynomialFeatures(degree = 4)
+        # PR_regression = LinearRegression()
+        # train_features_poly = poly.fit_transform(train_features)
+        # PR_regression.fit(train_features_poly, train_labels)
+        # test_features_poly = poly.fit_transform(test_features)
+        # predictions = PR_regression.predict(test_features_poly)
+        # errors = abs(predictions - test_labels)
+        # mape = 100 * (errors / test_labels)
+        # accuracy = 100 - np.mean(mape)
+        # PR_end_time = datetime.datetime.now()
+        # PR_time = (PR_end_time - PR_start_time).total_seconds()
+        # print("Polynomial Regression accuracy is", round(accuracy, 4), '%')
+        # print("Polynomial Regression takes", round(PR_time, 4), "seconds")
+        # print()
+        
+        # SVR Linear
+        # SVR_Linear_start_time = datetime.datetime.now()
+        # SVR_Linear_regression = SVR(kernel = 'linear', C = 100, gamma = 0.01, epsilon = .1)
+        # features_scaler = StandardScaler()
+        # labels_scaler = StandardScaler()
+        # scaled_features = features_scaler.fit_transform(train_features)
+        # scaled_labels = train_labels.ravel()
+        # SVR_Linear_regression.fit(scaled_features, scaled_labels)
+        # predictions = SVR_Linear_regression.predict(test_features)
+        # predictions = labels_scaler.inverse_transform(predictions)
+        # errors = abs(predictions - test_labels)
+        # mape = 100 * (errors / test_labels)
+        # accuracy = 100 - np.mean(mape)
+        # SVR_Linear_end_time = datetime.datetime.now()
+        # SVR_Linear_time = (SVR_Linear_end_time - SVR_Linear_start_time).total_seconds()
+        # print("SVR Linear kernel accuracy is", round(accuracy, 4), '%')
+        # print("SVR Linear kernel takes", round(SVR_Linear_time, 4), "seconds")
+        # print()
+        
+        # SVR RBF
+        # SVR_RBF_start_time = datetime.datetime.now()
+        # SVR_RBF_regression = SVR(kernel = 'rbf')
+        # SVR_RBF_regression.fit(train_features, train_labels)
+        # predictions = SVR_RBF_regression.predict(test_features)
+        # errors = abs(predictions - test_labels)
+        # mape = 100 * (errors / test_labels)
+        # accuracy = 100 - np.mean(mape)
+        # SVR_RBF_end_time = datetime.datetime.now()
+        # SVR_RBF_time = (SVR_RBF_end_time - SVR_RBF_start_time).total_seconds()
+        # print("SVR rbf kernel accuracy is", round(accuracy, 4), '%')
+        # print("SVR rbf kernel takes", round(SVR_Linear_time, 4), "seconds")
+        # print()
+        
+        # Decision Tree Regressor
+        DTR_start_time = datetime.datetime.now()
+        DTR_regression = SVR(kernel = 'rbf')
+        DTR_regression.fit(train_features, train_labels)
+        predictions = DTR_regression.predict(test_features)
+        errors = abs(predictions - test_labels)
+        mape = 100 * (errors / test_labels)
+        accuracy = 100 - np.mean(mape)
+        DTR_end_time = datetime.datetime.now()
+        DTR_time = (DTR_end_time - DTR_start_time).total_seconds()
+        print("Decision Tree Regressor accuracy is", round(accuracy, 4), '%')
+        print("Decision Tree Regressor takes", round(DTR_time, 4), "seconds")
+        print()
+        
+        # Random Forest     
         # Normal tree
         random_forest_start_time = datetime.datetime.now()
         rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
@@ -94,9 +241,9 @@ class SVMModel:
         accuracy = 100 - np.mean(mape)
         random_forest_end_time = datetime.datetime.now()
         random_forest_time = (random_forest_end_time - random_forest_start_time).total_seconds()
-        print('Random forest mean absolute error is:', round(np.mean(errors), 2))
-        print('Random forest accuracy is:', round(accuracy, 4), '%')
-        print("Random forest takes ", round(random_forest_time, 4), "seconds")
+        # print('Random forest mean absolute error is', round(np.mean(errors), 2))
+        print('Random forest accuracy is', round(accuracy, 4), '%')
+        print("Random forest takes", round(random_forest_time, 4), "seconds")
         print()
 
         # Small tree
@@ -109,9 +256,9 @@ class SVMModel:
         accuracy = 100 - np.mean(mape)
         random_forest_small_end_time = datetime.datetime.now()
         random_forest_small_time = (random_forest_small_end_time - random_forest_small_start_time).total_seconds()
-        print('Random forest small tree mean absolute error is:', round(np.mean(errors), 2))
-        print('Random forest small tree accuracy is:', round(accuracy, 4), '%')
-        print("Random forest small tree takes ", round(random_forest_small_time, 4), "seconds")
+        # print('Random forest small tree mean absolute error is', round(np.mean(errors), 2))
+        print('Random forest small tree accuracy is', round(accuracy, 4), '%')
+        print("Random forest small tree takes", round(random_forest_small_time, 4), "seconds")
         print()
 
         rf_filename = 'random_forest.sav'

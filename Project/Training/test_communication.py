@@ -36,7 +36,7 @@ def on_connect(client, userdata, flags, rc):
     print('Connected with ESP32, result: ' + str(rc))
     client.subscribe(GLOVE_TOPIC)
     rf = pickle.load(open('random_forest.sav', 'rb'))
-    rf_small = pickle.load(open('random_forest_small.sav', 'rb'))
+    rf_small = pickle.load(open('random_forest.sav', 'rb'))
     print('Random forest model ready')
     start_time = datetime.datetime.now()
     print()
@@ -74,9 +74,9 @@ def on_message(client, userdata, msg):
             start_time = datetime.datetime.now()
             gesture = get_gesture_prediction()
             end_time = datetime.datetime.now()
-            print(gesture)
             rf_time = (end_time - start_time).total_seconds()
-            print(rf_time)
+            print("hand", hand)
+            print("time", rf_time)
             command = 'gesture unrecognized'
             if hand == 1:
                 if gesture == 1:
@@ -112,6 +112,7 @@ def matrix_transpose_and_flatten():
     global sensor_data
     global sensor_data_matrix
     sensor_data_matrix = np.concatenate(np.array(sensor_data).transpose())[30:]
+    sensor_data = []
   
 
 def write_to_csv():
@@ -121,8 +122,10 @@ def write_to_csv():
 def get_machine_learning_prediction():
     global sensor_data_matrix
     global rf
-    user_sensor_data_matrix[0, :] = sensor_data_matrix
+    user_sensor_data_matrix = []
+    user_sensor_data_matrix.append(sensor_data_matrix)
     sensor_data_matrix = []
+    # print("user_sensor_data_matrix", user_sensor_data_matrix)
     prediction = rf.predict(user_sensor_data_matrix)
     return prediction[0]
 
@@ -133,21 +136,23 @@ def get_gesture_prediction():
 
 #hand position is decoded as 4 bit using the pinkie finger as the most significant bit
 def get_finger_positions(fingers):
-    hand = (1 if int(float(fingers[0])) <= 40 else 0) + (2 if int(float(fingers[1])) <= 40 else 0) + (4 if int(float(fingers[2])) <= 40 else 0) + (8 if int(float(fingers[3])) <= 40 else 0)
+    hand = (1 if int(float(fingers[0])) <= 50 else 0) + (2 if int(float(fingers[1])) <= 50 else 0) + (4 if int(float(fingers[2])) <= 50 else 0) + (8 if int(float(fingers[3])) <= 50 else 0)
     return hand
 
 def evaluated_prediction(prediction):
     gesture = 0
-    if prediction >= 0.9 and prediction <= 1.1:
+    print("prediction", prediction)
+    if prediction >= 0.8 and prediction <= 1.2:
         gesture = 1
-    elif prediction >= 1.9 and prediction <= 2.1:
+    elif prediction >= 1.8 and prediction <= 2.2:
         gesture = 2
-    elif prediction >= 2.9 and prediction <= 3.1:
+    elif prediction >= 2.8 and prediction <= 3.2:
         gesture = 3
-    elif prediction >= 3.9 and prediction <= 4.1:
+    elif prediction >= 3.8 and prediction <= 4.2:
         gesture = 4
     else:
         gesture = 0
+    print("gesture", gesture)
     return gesture
 
 
