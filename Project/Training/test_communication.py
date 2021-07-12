@@ -66,6 +66,7 @@ def on_message(client, userdata, msg):
     if gesture_mode == 2:
         if message_index == 0:
             print('Start to recognize gesture')
+            print("hand start ", hand)
             sensor_data = []
         if message_index < 30:
             write_to_matrix(tokens[5:8])
@@ -75,15 +76,18 @@ def on_message(client, userdata, msg):
             gesture = get_gesture_prediction()
             end_time = datetime.datetime.now()
             rf_time = (end_time - start_time).total_seconds()
-            print("hand", hand)
             print("time", rf_time)
-            command = 'gesture unrecognized'
+            hand = get_finger_positions(tokens[:4])
+            print("hand end", hand)
+            command = ''
             if hand == 1:
                 if gesture == 1:
+                    print("1 1")
                     command = 'next device'
                 elif gesture == 2:
                     command = 'previous device'
                 else:
+                    print("1 3")
                     command = 'gesture unrecognized'
             elif hand == 3:
                 if gesture == 1:
@@ -95,7 +99,11 @@ def on_message(client, userdata, msg):
                 elif gesture == 4:
                     command = 'lower brightness'
                 else:
+                    print("2 5")
                     command = 'gesture unrecognized'
+            else:
+                print("3 0")
+                command = 'gesture unrecognized'
             print('Recognized command is: ' + command)
             message_index = 0
             filename_index += 1
@@ -112,6 +120,7 @@ def matrix_transpose_and_flatten():
     global sensor_data
     global sensor_data_matrix
     sensor_data_matrix = np.concatenate(np.array(sensor_data).transpose())[30:]
+    print(sensor_data_matrix[:30])
     sensor_data = []
   
 
@@ -142,13 +151,13 @@ def get_finger_positions(fingers):
 def evaluated_prediction(prediction):
     gesture = 0
     print("prediction", prediction)
-    if prediction >= 0.8 and prediction <= 1.2:
+    if prediction >= 0.7 and prediction <= 1.3:
         gesture = 1
-    elif prediction >= 1.8 and prediction <= 2.2:
+    elif prediction >= 1.7 and prediction <= 2.3:
         gesture = 2
-    elif prediction >= 2.8 and prediction <= 3.2:
+    elif prediction >= 2.7 and prediction <= 3.3:
         gesture = 3
-    elif prediction >= 3.8 and prediction <= 4.2:
+    elif prediction >= 3.7 and prediction <= 4.3:
         gesture = 4
     else:
         gesture = 0
