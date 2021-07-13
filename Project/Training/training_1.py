@@ -37,7 +37,7 @@ class SVMModel:
     def training(self):
         self.read_data_from_csv("left", 0)
         self.read_data_from_csv("right", 1)
-        self.read_data_from_csv("clocks", 2)
+        self.read_data_from_csv("clock", 2)
         self.read_data_from_csv("pull", 3)
 
         # hardcoded target for gesture labeling. left swiping is 1, right swiping is 2, clockwise circle is 3, pull is 4
