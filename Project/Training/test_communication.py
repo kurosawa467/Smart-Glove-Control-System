@@ -34,7 +34,7 @@ def on_connect(client, userdata, flags, rc):
     global start_time
     print('Connected with ESP32, result: ' + str(rc))
     client.subscribe(GLOVE_TOPIC)
-    rf = pickle.load(open('random_forest.sav', 'rb'))
+    rf = pickle.load(open('random_forest_small.sav', 'rb'))
     print('machine learning models ready')
     start_time = datetime.datetime.now()
     print()
