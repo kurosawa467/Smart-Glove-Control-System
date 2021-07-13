@@ -25,21 +25,16 @@ filename_prefix = 'gesture_'
 filename_index = 0
 message_index = 0
 start_time = 0
-rf = None
 rf_small = None
-decision_tree_regressor = None
 gesture_mode = 1
+hand = 16
 
 def on_connect(client, userdata, flags, rc):
-    global rf
     global rf_small
-    global decision_tree_regressor
     global start_time
     print('Connected with ESP32, result: ' + str(rc))
     client.subscribe(GLOVE_TOPIC)
-    rf = pickle.load(open('random_forest.sav', 'rb'))
     rf_small = pickle.load(open('random_forest.sav', 'rb'))
-    decision_tree_regressor = pickle.load(open('decision_tree_regressor.sav', 'rb'))
     print('machine learning models ready')
     start_time = datetime.datetime.now()
     print()
@@ -51,24 +46,26 @@ def on_message(client, userdata, msg):
     global filename_index
     global gesture_mode
     global sensor_data
+    global hand
     # print('Message topic: ' + msg.topic + ', message payload: ' + str(msg.payload))
     raw_message = str(msg.payload)
     message = raw_message[raw_message.index('=>') + 2:].rstrip("'")
     tokens = message.split(',')
 
-    hand = get_finger_positions(tokens[:4])
-
     # Here decides when to start recording gesture
     if gesture_mode == 1:
+        hand = get_finger_positions(tokens[:4])
         if hand == 1 or hand == 3:
             gesture_mode = 2
     if gesture_mode == 3:
+        hand = get_finger_positions(tokens[:4])
         if hand == 15:
             gesture_mode = 1
 
     if gesture_mode == 2:
         if message_index == 0:
             print('Start to recognize gesture')
+            hand = get_finger_positions(tokens[:4])
             print("hand start ", hand)
             sensor_data = []
         if message_index < 30:
@@ -80,7 +77,7 @@ def on_message(client, userdata, msg):
             end_time = datetime.datetime.now()
             rf_time = (end_time - start_time).total_seconds()
             print("time", rf_time)
-            hand = get_finger_positions(tokens[:4])
+            # hand = get_finger_positions(tokens[:4])
             print("hand end", hand)
             command = ''
             if hand == 1:
@@ -133,12 +130,12 @@ def write_to_csv():
 
 def get_machine_learning_prediction():
     global sensor_data_matrix
-    global decision_tree_regressor
+    global rf_small
     user_sensor_data_matrix = []
     user_sensor_data_matrix.append(sensor_data_matrix)
     sensor_data_matrix = []
     # print("user_sensor_data_matrix", user_sensor_data_matrix)
-    prediction = decision_tree_regressor.predict(user_sensor_data_matrix)
+    prediction = rf_small.predict(user_sensor_data_matrix)
     return prediction[0]
 
 def get_gesture_prediction():
