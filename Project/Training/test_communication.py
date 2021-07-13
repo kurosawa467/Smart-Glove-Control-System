@@ -25,16 +25,16 @@ filename_prefix = 'gesture_'
 filename_index = 0
 message_index = 0
 start_time = 0
-rf_small = None
+rf = None
 gesture_mode = 1
 hand = 16
 
 def on_connect(client, userdata, flags, rc):
-    global rf_small
+    global rf
     global start_time
     print('Connected with ESP32, result: ' + str(rc))
     client.subscribe(GLOVE_TOPIC)
-    rf_small = pickle.load(open('random_forest.sav', 'rb'))
+    rf = pickle.load(open('random_forest.sav', 'rb'))
     print('machine learning models ready')
     start_time = datetime.datetime.now()
     print()
@@ -95,9 +95,9 @@ def on_message(client, userdata, msg):
                 elif gesture == 2:
                     command = 'previous color'
                 elif gesture == 3:
-                    command = 'higher brightness'
-                elif gesture == 4:
                     command = 'lower brightness'
+                elif gesture == 4:
+                    command = 'higher brightness'
                 else:
                     print("2 5")
                     command = 'gesture unrecognized'
@@ -130,12 +130,12 @@ def write_to_csv():
 
 def get_machine_learning_prediction():
     global sensor_data_matrix
-    global rf_small
+    global rf
     user_sensor_data_matrix = []
     user_sensor_data_matrix.append(sensor_data_matrix)
     sensor_data_matrix = []
     # print("user_sensor_data_matrix", user_sensor_data_matrix)
-    prediction = rf_small.predict(user_sensor_data_matrix)
+    prediction = rf.predict(user_sensor_data_matrix)
     return prediction[0]
 
 def get_gesture_prediction():

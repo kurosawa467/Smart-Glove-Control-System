@@ -37,10 +37,10 @@ class SVMModel:
     def training(self):
         self.read_data_from_csv("left", 0)
         self.read_data_from_csv("right", 1)
-        self.read_data_from_csv("clocks", 1)
-        self.read_data_from_csv("counters", 1)
+        self.read_data_from_csv("clocks", 2)
+        self.read_data_from_csv("pull", 3)
 
-        # hardcoded target for gesture labeling. left swiping is 1, right swiping is 2, clockwise circle is 3, counter-clockwise circle is 4
+        # hardcoded target for gesture labeling. left swiping is 1, right swiping is 2, clockwise circle is 3, pull is 4
         target = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -82,7 +82,7 @@ class SVMModel:
         print('Random forest accuracy is', round(accuracy, 4), '%')
         print("Random forest takes", round(random_forest_time, 4), "seconds")
         print()
-        rf_filename = 'random_forest_1.sav'
+        rf_filename = 'random_forest.sav'
         pickle.dump(rf, open(rf_filename, 'wb'))
 
         # Small tree
@@ -99,13 +99,13 @@ class SVMModel:
         print('Random forest small tree accuracy is', round(accuracy, 4), '%')
         print("Random forest small tree takes", round(random_forest_small_time, 4), "seconds")
         print()
-        rf_small_filename = 'random_forest_small_1.sav'
+        rf_small_filename = 'random_forest_small.sav'
         pickle.dump(rf_small, open(rf_small_filename, 'wb'))
         
         #loaded_model = pickle.load(open(filename, 'rb'))
         #y_prediction2 = loaded_model.predict(X_test)
         #print("Accuracy is ", metrics.accuracy_score(y_test, y_prediction2))
-        return metrics.accuracy_score(y_test, y_prediction)
+        return accuracy
 
     def read_data_from_csv(self, gesture, index_offset):
         index = 0 + 100 * index_offset
