@@ -138,19 +138,20 @@ class SmartGloveControlSystem:
                 self.gesture_mode = 1
 
         if self.gesture_mode == 2:
-            if self.message_index == 0:
+            if SmartGloveControlSystem.message_index == 0:
                 print('Start to recognize gesture')
                 hand = get_finger_positions(tokens[:4])
                 print("hand start ", hand)
                 self.sensor_data = []
-            if self.message_index < 30:
-                print(self.message_index)
+            if SmartGloveControlSystem.message_index < 30:
+                print(SmartGloveControlSystem.message_index)
                 self.write_to_matrix(tokens[5:8])
-                self.message_index += 1
-            if self.message_index == 30:
-                print('check')
+                SmartGloveControlSystem.message_index += 1
+            if SmartGloveControlSystem.message_index == 30:
+
                 start_time = datetime.datetime.now()
                 gesture = self.get_gesture_prediction()
+                print('test')
                 end_time = datetime.datetime.now()
                 rf_time = (end_time - start_time).total_seconds()
                 print("time", rf_time)
@@ -177,7 +178,7 @@ class SmartGloveControlSystem:
                 else:
                     command = 'gesture unrecognized'
                 print('Recognized command is: ' + command)
-                message_index = 0
+                SmartGloveControlSystem.message_index = 0
                 gesture_mode = 3
 
                 return command
@@ -191,6 +192,7 @@ class SmartGloveControlSystem:
     def get_gesture_prediction(self):
         self.matrix_transpose_and_flatten()
         prediction = self.get_machine_learning_prediction()
+        print('test3')
         return evaluated_prediction(prediction)
 
     def matrix_transpose_and_flatten(self):
@@ -199,10 +201,14 @@ class SmartGloveControlSystem:
         self.sensor_data = []
 
     def get_machine_learning_prediction(self):
+        print('test1')
         user_sensor_data_matrix = []
         user_sensor_data_matrix.append(self.sensor_data_matrix)
-        # print("user_sensor_data_matrix", user_sensor_data_matrix)
+        print('test2')
+        print("user_sensor_data_matrix", user_sensor_data_matrix)
+        print('test3')
         prediction = self.model.predict(user_sensor_data_matrix)
+        print('test')
         return prediction[0]
 
     def dim_LED(self, roll):

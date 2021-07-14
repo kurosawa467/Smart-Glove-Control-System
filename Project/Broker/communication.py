@@ -9,7 +9,7 @@ GLOVE_TOPIC = '/esp32/glove'
 dim = 50
 direction = 1
 encoding = 'utf-8'
-control_system = ''
+control_system = SmartGloveControlSystem()
 
 def on_connect(client, userdata, flags, rc):
   print('Connected with ESP32, result: ' + str(rc))
