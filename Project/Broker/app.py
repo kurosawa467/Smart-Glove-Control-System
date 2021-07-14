@@ -20,13 +20,9 @@ class SensorMessageQueue:
         smartGloveControlSystem.handle_queue(client)
 
 class SmartGloveControlSystem:
+    selected_device = 0
     # IoT device command, placeholders for now
-    class IoTTopic(Enum):
-        LED_1_ANALOG_TOPIC = '/esp8266/1.1'
-        LED_1_DIGITAL_TOPIC = '/esp8266/1.2'
-        LED_2_ANALOG_TOPIC = '/esp8266/2.1'
-        LED_2_DIGITAL_TOPIC = '/esp8266/2.2'
-        JS_APP = 'JS_APP'
+    subscribing_topics = ['/esp8266/1.1','/esp8266/1.2','/esp8266/2.1', '/esp8266/2.2', 'JS_APP']
 
     def __init__(self):
         # raw_data_buffer stores raw data directly parsed from sensor data
