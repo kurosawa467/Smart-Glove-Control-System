@@ -17,7 +17,7 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
   print('Message topic: ' + msg.topic + ', message payload: ' + str(msg.payload))
   SensorMessageQueue().pushNewMessage(str(msg.payload), client)
-  SmartGloveControlSystem().handle_queue(client)
+  SmartGloveControlSystem().handle_queue(client)    #TODO: is this used?
 
 def main(): 
   mqtt_client = mqtt.Client()
