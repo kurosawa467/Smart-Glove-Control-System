@@ -18,7 +18,7 @@ class SensorMessageQueue:
     def pushNewMessage(self, message, client):
         SensorMessageQueue.queue.put(message)
         # print('Queue size is ' + str(SensorMessageQueue.queue.qsize()))
-        print('Message has been pushed into queue')
+        #print('Message has been pushed into queue')
         smartGloveControlSystem = SmartGloveControlSystem()
         smartGloveControlSystem.handle_queue(client)
 
@@ -84,6 +84,7 @@ class SmartGloveControlSystem:
         self.gesture_buffer = []
         self.logger = logging.getLogger('Home')
         self.model = pickle.load(open('random_forest_small.sav', 'rb'))
+        self.start_time = datetime.datetime.now()
 
     # TODO: is this used?
     def start_looping(self):
@@ -109,14 +110,16 @@ class SmartGloveControlSystem:
     # TODO: is this used?
     def handle_queue(self, client):
         queue = SensorMessageQueue.queue
-        print('Checking message queue')
+        #print('Checking message queue')
 
         if queue.qsize():
-            self.logger.info('Message queued, start processing')
-            print('Message found, started procesing')
+            pass
+            #self.logger.info('Message queued, start processing')
+            #print('Message found, started procesing')
         else:
-            self.logger.info('Message queue is empty')
-            print('Message queue is empty')
+            pass
+            #self.logger.info('Message queue is empty')
+            #print('Message queue is empty')
             return
 
         while not queue.empty():
@@ -141,9 +144,11 @@ class SmartGloveControlSystem:
                 print("hand start ", hand)
                 sensor_data = []
             if self.message_index < 30:
+                print(self.message_index)
                 self.write_to_matrix(tokens[5:8])
                 self.message_index += 1
             if self.message_index == 30:
+                print('check')
                 start_time = datetime.datetime.now()
                 gesture = self.get_gesture_prediction()
                 end_time = datetime.datetime.now()
