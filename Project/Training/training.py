@@ -38,7 +38,7 @@ class SVMModel:
         self.read_data_from_csv("left", 0)
         self.read_data_from_csv("right", 1)
         self.read_data_from_csv("clock", 2)
-        self.read_data_from_csv("counter", 3)
+        self.read_data_from_csv("pull", 3)
 
         # hardcoded target for gesture labeling. left swiping is 1, right swiping is 2, clockwise circle is 3, counter-clockwise circle is 4
         target = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -66,9 +66,10 @@ class SVMModel:
         
         # Classification
         # Logistic Regression
-        LR_start_time = datetime.datetime.now()
-        LR_classifier = LogisticRegression(random_state = 42)
+
+        LR_classifier = LogisticRegression(random_state = 42, max_iter=1000)
         LR_classifier.fit(X_train, y_train)
+        LR_start_time = datetime.datetime.now()
         y_prediction = LR_classifier.predict(X_test)
         accuracy = metrics.accuracy_score(y_test, y_prediction)
         LR_end_time = datetime.datetime.now()
@@ -77,11 +78,12 @@ class SVMModel:
         print("Logistic Regression accuracy is", round(accuracy * 100, 4), '%')
         print("Logistic Regression takes", round(LR_time, 4), "seconds")
         print()
-        
+
         # Decision Tree Classifier
-        DTC_start_time = datetime.datetime.now()
+
         DTC_classifier = DecisionTreeClassifier(random_state = 42)
         DTC_classifier.fit(X_train, y_train)
+        DTC_start_time = datetime.datetime.now()
         y_prediction = DTC_classifier.predict(X_test)
         accuracy = metrics.accuracy_score(y_test, y_prediction)
         DTC_end_time = datetime.datetime.now()
@@ -91,9 +93,9 @@ class SVMModel:
         print()
         
         # KNeighbors Classifier
-        KNC_start_time = datetime.datetime.now()
         KNC_classifier = KNeighborsClassifier()
         KNC_classifier.fit(X_train, y_train)
+        KNC_start_time = datetime.datetime.now()
         y_prediction = KNC_classifier.predict(X_test)
         accuracy = metrics.accuracy_score(y_test, y_prediction)
         KNC_end_time = datetime.datetime.now()
@@ -103,9 +105,9 @@ class SVMModel:
         print()
         
         # Linear Discriminant Analysis
-        LDA_start_time = datetime.datetime.now()
         LDA_classifier = LinearDiscriminantAnalysis()
         LDA_classifier.fit(X_train, y_train)
+        LDA_start_time = datetime.datetime.now()
         y_prediction = LDA_classifier.predict(X_test)
         accuracy = metrics.accuracy_score(y_test, y_prediction)
         LDA_end_time = datetime.datetime.now()
@@ -115,9 +117,10 @@ class SVMModel:
         print()
         
         # Gaussian NB
-        GNB_start_time = datetime.datetime.now()
+
         GNB_classifier = GaussianNB()
         GNB_classifier.fit(X_train, y_train)
+        GNB_start_time = datetime.datetime.now()
         y_prediction = GNB_classifier.predict(X_test)
         accuracy = metrics.accuracy_score(y_test, y_prediction)
         GNB_end_time = datetime.datetime.now()
@@ -127,8 +130,9 @@ class SVMModel:
         print()
         
         # SVM linear
-        SVM_linear_start_time = datetime.datetime.now()
+
         SVMModel.classifier_linear.fit(X_train, y_train)
+        SVM_linear_start_time = datetime.datetime.now()
         y_prediction = SVMModel.classifier_linear.predict(X_test)
         accuracy = metrics.accuracy_score(y_test, y_prediction)
         SVM_linear_end_time = datetime.datetime.now()
@@ -138,8 +142,9 @@ class SVMModel:
         print()
         
         # SVM rbf
-        SVM_non_linear_start_time = datetime.datetime.now()
+
         SVMModel.classifier_rbf.fit(X_train, y_train)
+        SVM_non_linear_start_time = datetime.datetime.now()
         y_prediction = SVMModel.classifier_rbf.predict(X_test)
         accuracy = metrics.accuracy_score(y_test, y_prediction)
         SVM_non_linear_end_time = datetime.datetime.now()
@@ -153,9 +158,10 @@ class SVMModel:
         train_features, test_features, train_labels, test_labels = train_test_split(SVMModel.sensor_data_matrix, target, 
                                                                                     test_size = 0.3, random_state = 42)
         # Linear Regression
-        LR_start_time = datetime.datetime.now()
+
         LR_regression = LinearRegression()
         LR_regression.fit(train_features, train_labels)
+        LR_start_time = datetime.datetime.now()
         predictions = LR_regression.predict(test_features)
         errors = abs(predictions - test_labels)
         mape = 100 * (errors / test_labels)
@@ -217,9 +223,10 @@ class SVMModel:
         # print()
         
         # Decision Tree Regressor
-        DTR_start_time = datetime.datetime.now()
+
         DTR_regression = SVR(kernel = 'rbf')
         DTR_regression.fit(train_features, train_labels)
+        DTR_start_time = datetime.datetime.now()
         predictions = DTR_regression.predict(test_features)
         errors = abs(predictions - test_labels)
         mape = 100 * (errors / test_labels)
@@ -235,9 +242,10 @@ class SVMModel:
         
         # Random Forest     
         # Normal tree
-        random_forest_start_time = datetime.datetime.now()
+
         rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
         rf.fit(train_features, train_labels)
+        random_forest_start_time = datetime.datetime.now()
         predictions = rf.predict(test_features)
         errors = abs(predictions - test_labels)
         mape = 100 * (errors / test_labels)
@@ -250,9 +258,10 @@ class SVMModel:
         print()
 
         # Small tree
-        random_forest_small_start_time = datetime.datetime.now()
+
         rf_small = RandomForestRegressor(n_estimators = 50, max_depth = 3, random_state = 42)
         rf_small.fit(train_features, train_labels)
+        random_forest_small_start_time = datetime.datetime.now()
         predictions = rf_small.predict(test_features)
         errors = abs(predictions - test_labels)
         mape = 100 * (errors / test_labels)
@@ -277,7 +286,7 @@ class SVMModel:
 
     def read_data_from_csv(self, gesture, index_offset):
         index = 0 + 100 * index_offset
-        for file in glob.glob("/home/pi/smart-glove-control-system/Project/Training/" + gesture + "/*.csv"):
+        for file in glob.glob("./" + gesture + "/*.csv"):
             sensor_data = pandas.read_csv(file, header = 0)
             row = np.concatenate((np.array(sensor_data['yaw']).T,
                                   np.array(sensor_data['pitch']).T,
