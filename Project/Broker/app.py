@@ -1,6 +1,7 @@
 from enum import Enum
 import serial
 from serial import Serial, SerialException
+from random import random
 import logging
 import queue
 import time
@@ -12,15 +13,16 @@ import pickle
 class SensorMessageQueue:
     queue = queue.Queue()
 
-    def __init__(self):
+
+    def __init__(self, smartControlSystem):
         time.sleep(0.0001)
+        self.controlSystem = smartControlSystem
 
     def pushNewMessage(self, message, client):
         SensorMessageQueue.queue.put(message)
-        # print('Queue size is ' + str(SensorMessageQueue.queue.qsize()))
+        #print('Queue size is ' + str(SensorMessageQueue.queue.qsize()))
         #print('Message has been pushed into queue')
-        smartGloveControlSystem = SmartGloveControlSystem()
-        smartGloveControlSystem.handle_queue(client)
+        self.controlSystem.handle_queue(client)
 
 
 def evaluate_finger(finger):
@@ -55,13 +57,13 @@ def get_finger_positions(fingers):
 def evaluated_prediction(prediction):
     gesture = 0
     print("prediction", prediction)
-    if prediction >= 0.7 and prediction <= 1.3:
+    if prediction >= 0.5 and prediction < 1.5:
         gesture = 1
-    elif prediction >= 1.7 and prediction <= 2.3:
+    elif prediction >= 1.5 and prediction < 2.5:
         gesture = 2
-    elif prediction >= 2.7 and prediction <= 3.3:
+    elif prediction >= 2.5 and prediction < 3.5:
         gesture = 3
-    elif prediction >= 3.7 and prediction <= 4.3:
+    elif prediction >= 3.5 and prediction < 4.5:
         gesture = 4
     else:
         gesture = 0
@@ -77,6 +79,7 @@ class SmartGloveControlSystem:
     selected_device = 0
     offered_topics = ['/esp8266/1.1', '/esp8266/1.2', '/esp8266/2.1', '/esp8266/2.2', 'JS_APP']
     model = ''
+    hand = 0
 
     def __init__(self):
         # raw_data_buffer stores raw data directly parsed from sensor data
@@ -85,7 +88,6 @@ class SmartGloveControlSystem:
         self.logger = logging.getLogger('Home')
         self.model = pickle.load(open('random_forest_small.sav', 'rb'))
         self.start_time = datetime.datetime.now()
-
     # TODO: is this used?
     def start_looping(self):
         self.handle_queue()
@@ -93,11 +95,17 @@ class SmartGloveControlSystem:
     def handle_message(self, raw_message, client):
         tokens = process_message(raw_message)
 
+
+        #print('current hand:', get_finger_positions(tokens[:4]),"stored hand:", self.hand, "gesture mode:", self.gesture_mode)
+
+
         command = self.get_command(tokens)
         if command == 'next device':
-            self.selected_device = (self.selected_device + 1) % self.offered_topics.len
+            self.selected_device = (self.selected_device + 1) % len(self.offered_topics)
+            print("current device", self.selected_device)
         elif command == 'previous device':
-            self.selected_device = (self.selected_device - 1) % self.offered_topics.len
+            self.selected_device = (self.selected_device - 1) % len(self.offered_topics)
+            print("current device", self.selected_device)
         elif command == 'next color':
             client.publish(self.offered_topics[self.selected_device], "1")
         elif command == 'previous color':
@@ -110,7 +118,7 @@ class SmartGloveControlSystem:
     # TODO: is this used?
     def handle_queue(self, client):
         queue = SensorMessageQueue.queue
-        #print('Checking message queue')
+    #    print('Checking message queue')
 
         if queue.qsize():
             pass
@@ -127,44 +135,42 @@ class SmartGloveControlSystem:
             self.handle_message(message, client)
 
     def get_command(self, tokens):
-        hand = 0
         if self.gesture_mode == 1:
-            hand = get_finger_positions(tokens[:4])
-            if hand == 1 or hand == 3:
+            self.hand = get_finger_positions(tokens[:4])
+            if self.hand == 1 or self.hand == 3:
                 self.gesture_mode = 2
         if self.gesture_mode == 3:
-            hand = get_finger_positions(tokens[:4])
-            if hand == 15:
+            self.hand = get_finger_positions(tokens[:4])
+            if self.hand == 15 or self.hand == 7:
                 self.gesture_mode = 1
 
         if self.gesture_mode == 2:
-            if SmartGloveControlSystem.message_index == 0:
+            if self.message_index == 0:
                 print('Start to recognize gesture')
-                hand = get_finger_positions(tokens[:4])
-                print("hand start ", hand)
+                self.hand = get_finger_positions(tokens[:4])
+                print("hand start ", self.hand)
                 self.sensor_data = []
-            if SmartGloveControlSystem.message_index < 30:
-                print(SmartGloveControlSystem.message_index)
+            if self.message_index < 30:
+                print('message index',self.message_index)
                 self.write_to_matrix(tokens[5:8])
-                SmartGloveControlSystem.message_index += 1
-            if SmartGloveControlSystem.message_index == 30:
-
+                self.message_index += 1
+            if self.message_index == 30:
+                print('Got all data')
                 start_time = datetime.datetime.now()
                 gesture = self.get_gesture_prediction()
-                print('test')
                 end_time = datetime.datetime.now()
                 rf_time = (end_time - start_time).total_seconds()
                 print("time", rf_time)
-                print("hand end", hand)
+                print("hand end", self.hand)
                 command = ''
-                if hand == 1:
+                if self.hand == 1:
                     if gesture == 1:
                         command = 'next device'
                     elif gesture == 2:
                         command = 'previous device'
                     else:
                         command = 'gesture unrecognized'
-                elif hand == 3:
+                elif self.hand == 3:
                     if gesture == 1:
                         command = 'next color'
                     elif gesture == 2:
@@ -178,8 +184,8 @@ class SmartGloveControlSystem:
                 else:
                     command = 'gesture unrecognized'
                 print('Recognized command is: ' + command)
-                SmartGloveControlSystem.message_index = 0
-                gesture_mode = 3
+                self.message_index = 0
+                self.gesture_mode = 3
 
                 return command
 
@@ -192,23 +198,19 @@ class SmartGloveControlSystem:
     def get_gesture_prediction(self):
         self.matrix_transpose_and_flatten()
         prediction = self.get_machine_learning_prediction()
-        print('test3')
         return evaluated_prediction(prediction)
 
     def matrix_transpose_and_flatten(self):
+        #print(self.sensor_data)
         self.sensor_data_matrix = np.concatenate(np.array(self.sensor_data).transpose())[30:]
-        print(self.sensor_data_matrix[:30])
+        #print(self.sensor_data_matrix[:30])
         self.sensor_data = []
 
     def get_machine_learning_prediction(self):
-        print('test1')
         user_sensor_data_matrix = []
         user_sensor_data_matrix.append(self.sensor_data_matrix)
-        print('test2')
-        print("user_sensor_data_matrix", user_sensor_data_matrix)
-        print('test3')
+        #print("user_sensor_data_matrix", user_sensor_data_matrix)
         prediction = self.model.predict(user_sensor_data_matrix)
-        print('test')
         return prediction[0]
 
     def dim_LED(self, roll):
