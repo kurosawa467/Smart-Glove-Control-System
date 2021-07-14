@@ -77,7 +77,6 @@ def on_message(client, userdata, msg):
             end_time = datetime.datetime.now()
             rf_time = (end_time - start_time).total_seconds()
             print("time", rf_time)
-            # hand = get_finger_positions(tokens[:4])
             print("hand end", hand)
             command = ''
             if hand == 1:
