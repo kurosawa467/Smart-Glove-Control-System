@@ -9,15 +9,17 @@ GLOVE_TOPIC = '/esp32/glove'
 dim = 50
 direction = 1
 encoding = 'utf-8'
+control_system = ''
 
 def on_connect(client, userdata, flags, rc):
   print('Connected with ESP32, result: ' + str(rc))
   client.subscribe(GLOVE_TOPIC)
+  control_system = SmartGloveControlSystem()
 
 def on_message(client, userdata, msg):
   print('Message topic: ' + msg.topic + ', message payload: ' + str(msg.payload))
   SensorMessageQueue().pushNewMessage(str(msg.payload), client)
-  SmartGloveControlSystem().handle_queue(client)    #TODO: is this used?
+  control_system.handle_queue(client)
 
 def main(): 
   mqtt_client = mqtt.Client()

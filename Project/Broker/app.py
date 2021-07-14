@@ -139,7 +139,7 @@ class SmartGloveControlSystem:
                 print('Start to recognize gesture')
                 hand = get_finger_positions(tokens[:4])
                 print("hand start ", hand)
-                sensor_data = []
+                self.sensor_data = []
             if self.message_index < 30:
                 self.write_to_matrix(tokens[5:8])
                 self.message_index += 1
