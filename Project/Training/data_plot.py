@@ -16,4 +16,7 @@ def plot_for_one_csv(filename):
     plt.legend()
     plt.show()
     
-plot_for_one_csv('left/left50.csv')
+
+plot_for_one_csv('counter/counter37.csv')
+plot_for_one_csv('counter/counter45.csv')
+plot_for_one_csv('counter/counter89.csv')

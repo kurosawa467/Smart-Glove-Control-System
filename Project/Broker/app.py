@@ -86,7 +86,7 @@ class SmartGloveControlSystem:
         self.raw_data_buffer = []
         self.gesture_buffer = []
         self.logger = logging.getLogger('Home')
-        self.model = pickle.load(open('random_forest_small.sav', 'rb'))
+        self.model = pickle.load(open('dtc.sav', 'rb'))
         self.start_time = datetime.datetime.now()
     # TODO: is this used?
     def start_looping(self):
