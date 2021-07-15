@@ -77,9 +77,10 @@ class SmartGloveControlSystem:
     gesture_mode = 1
     sensor_data = []
     selected_device = 0
-    offered_topics = ['/esp8266/1.1', '/esp8266/1.2', '/esp8266/2.1', '/esp8266/2.2', 'JS_APP']
+    offered_topics = ['/esp8266/1.1', '/esp8266/1.2', 'JS_APP']#['/esp8266/1.1', '/esp8266/1.2', '/esp8266/2.1', '/esp8266/2.2', 'JS_APP']
     model = ''
     hand = 0
+    message_id = 0
 
     def __init__(self):
         # raw_data_buffer stores raw data directly parsed from sensor data
@@ -114,6 +115,8 @@ class SmartGloveControlSystem:
             client.publish(self.offered_topics[self.selected_device], "3")
         elif command == 'higher brightness':
             client.publish(self.offered_topics[self.selected_device], "4")
+        else:
+            pass
 
     # TODO: is this used?
     def handle_queue(self, client):
@@ -188,6 +191,7 @@ class SmartGloveControlSystem:
                 self.gesture_mode = 3
 
                 return command
+        return 'incomplete command'
 
     def write_to_matrix(self, tokens):
         current_time = (datetime.datetime.now() - self.start_time).total_seconds() * 1000
