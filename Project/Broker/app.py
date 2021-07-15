@@ -80,7 +80,7 @@ class SmartGloveControlSystem:
     offered_topics = ['/esp8266/1.1', '/esp8266/1.2', 'JS_APP']#['/esp8266/1.1', '/esp8266/1.2', '/esp8266/2.1', '/esp8266/2.2', 'JS_APP']
     model = ''
     hand = 0
-    command_id = 0
+    message_id = 0
 
     def __init__(self):
         # raw_data_buffer stores raw data directly parsed from sensor data
@@ -103,24 +103,18 @@ class SmartGloveControlSystem:
         command = self.get_command(tokens)
         if command == 'next device':
             self.selected_device = (self.selected_device + 1) % len(self.offered_topics)
-            print("current device", self.selected_device, "command id:",self.command_id)
-            self.command_id =+1
+            print("current device", self.selected_device)
         elif command == 'previous device':
             self.selected_device = (self.selected_device - 1) % len(self.offered_topics)
-            print("current device", self.selected_device,"command id:",self.command_id)
-            self.command_id = +1
+            print("current device", self.selected_device)
         elif command == 'next color':
-            client.publish(self.offered_topics[self.selected_device], "1 " + self.command_id)
-            self.command_id = +1
+            client.publish(self.offered_topics[self.selected_device], "1")
         elif command == 'previous color':
-            client.publish(self.offered_topics[self.selected_device], "2 " + self.command_id)
-            self.command_id = +1
+            client.publish(self.offered_topics[self.selected_device], "2")
         elif command == 'lower brightness':
-            client.publish(self.offered_topics[self.selected_device], "3 " + self.command_id)
-            self.command_id = +1
+            client.publish(self.offered_topics[self.selected_device], "3")
         elif command == 'higher brightness':
-            client.publish(self.offered_topics[self.selected_device], "4 " + self.command_id)
-            self.command_id = +1
+            client.publish(self.offered_topics[self.selected_device], "4")
         else:
             pass
 
