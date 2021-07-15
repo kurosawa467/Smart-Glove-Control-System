@@ -19,7 +19,7 @@ import pickle
 import datetime
 
 class SVMModel:
-    sensor_data_matrix = np.zeros([400, 90])
+    sensor_data_matrix = np.zeros([440, 90])
     classifier_linear = svm.SVC(kernel = 'linear')
     classifier_rbf = svm.SVC(kernel = 'rbf')
 
@@ -38,7 +38,7 @@ class SVMModel:
         self.read_data_from_csv("left", 0)
         self.read_data_from_csv("right", 1)
         self.read_data_from_csv("clock", 2)
-        self.read_data_from_csv("counter", 3)
+        self.read_data_from_csv("pull", 3)
 
         # hardcoded target for gesture labeling. left swiping is 1, right swiping is 2, clockwise circle is 3, counter-clockwise circle is 4
         target = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -46,21 +46,25 @@ class SVMModel:
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
                            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
                            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
                            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
                            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                           2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
                            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
                            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
                            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
                            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
                            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+                           3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
                            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
                            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
                            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
                            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-                           4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4])
+                           4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+                           4, 4, 4, 4, 4, 4, 4, 4, 4, 4])
 
         X_train, X_test, y_train, y_test = train_test_split(SVMModel.sensor_data_matrix, target, test_size=0.3, random_state=42)
         
@@ -78,6 +82,9 @@ class SVMModel:
         print("Logistic Regression accuracy is", round(accuracy * 100, 4), '%')
         print("Logistic Regression takes", round(LR_time, 4), "seconds")
         print()
+        
+        dtc_filename = 'lr.sav'
+        pickle.dump(LR_classifier, open(dtc_filename, 'wb'))
 
         # Decision Tree Classifier
 
@@ -107,6 +114,9 @@ class SVMModel:
         print("KNeighbors Classifier takes", round(KNC_time, 4), "seconds")
         print()
         
+        knc_filename = 'knc.sav'
+        pickle.dump(KNC_classifier, open(knc_filename, 'wb'))
+        
         # Linear Discriminant Analysis
         LDA_classifier = LinearDiscriminantAnalysis()
         LDA_classifier.fit(X_train, y_train)
@@ -118,6 +128,9 @@ class SVMModel:
         print("Linear Discriminant Analysis accuracy is", round(accuracy * 100, 4), '%')
         print("Linear Discriminant Analysis takes", round(LDA_time, 4), "seconds")
         print()
+        
+        lda_filename = 'lda.sav'
+        pickle.dump(LDA_classifier, open(lda_filename, 'wb'))
         
         # Gaussian NB
 
@@ -245,7 +258,7 @@ class SVMModel:
         
         # Random Forest     
         # Normal tree
-
+        '''
         rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
         rf.fit(train_features, train_labels)
         random_forest_start_time = datetime.datetime.now()
@@ -259,6 +272,9 @@ class SVMModel:
         print('Random forest accuracy is', round(accuracy, 4), '%')
         print("Random forest takes", round(random_forest_time, 4), "seconds")
         print()
+        rf_filename = 'random_forest.sav'
+        pickle.dump(rf, open(rf_filename, 'wb'))
+        '''
 
         # Small tree
 
@@ -276,9 +292,7 @@ class SVMModel:
         print("Random forest small tree takes", round(random_forest_small_time, 4), "seconds")
         print()
 
-        rf_filename = 'random_forest.sav'
-        pickle.dump(rf, open(rf_filename, 'wb'))
-        
+      
         rf_small_filename = 'random_forest_small.sav'
         pickle.dump(rf_small, open(rf_small_filename, 'wb'))
         
@@ -288,7 +302,7 @@ class SVMModel:
         return metrics.accuracy_score(y_test, y_prediction)
 
     def read_data_from_csv(self, gesture, index_offset):
-        index = 0 + 100 * index_offset
+        index = 0 + 110 * index_offset
         for file in glob.glob("./" + gesture + "/*.csv"):
             sensor_data = pandas.read_csv(file, header = 0)
             row = np.concatenate((np.array(sensor_data['yaw']).T,

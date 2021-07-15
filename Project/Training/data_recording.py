@@ -6,7 +6,7 @@ import errno
 import datetime
 import pandas
 
-MQTT_ADDRESS = '192.168.178.100'
+MQTT_ADDRESS = '192.168.178.27'
 MQTT_USER = 'mosquitto'
 MQTT_PASSWORD = 'mosquitto'
 GLOVE_TOPIC = '/esp32/glove'

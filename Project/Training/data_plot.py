@@ -17,6 +17,12 @@ def plot_for_one_csv(filename):
     plt.show()
     
 
-plot_for_one_csv('counter/counter37.csv')
-plot_for_one_csv('counter/counter45.csv')
-plot_for_one_csv('counter/counter89.csv')
+plot_for_one_csv('clock/clock33.csv')
+plot_for_one_csv('clock/clock37.csv')
+plot_for_one_csv('counter/counter38.csv')
+plot_for_one_csv('counter/counter40.csv')
+#plot_for_one_csv('user/user34.csv')
+#plot_for_one_csv('user/user35.csv')
+#plot_for_one_csv('user/user36.csv')
+#plot_for_one_csv('user/user37.csv')
+#plot_for_one_csv('user/user38.csv')

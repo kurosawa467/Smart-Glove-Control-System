@@ -77,7 +77,7 @@ class SmartGloveControlSystem:
     gesture_mode = 1
     sensor_data = []
     selected_device = 0
-    offered_topics = ['/esp8266/1.1', '/esp8266/1.2', 'JS_APP']#['/esp8266/1.1', '/esp8266/1.2', '/esp8266/2.1', '/esp8266/2.2', 'JS_APP']
+    offered_topics = ['/esp8266/1.1', '/esp8266/1.2', '/esp8266/2.1', '/esp8266/2.2', 'JS_APP']
     model = ''
     hand = 0
     message_id = 0
