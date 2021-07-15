@@ -18,13 +18,13 @@ def plot_for_one_csv(filename):
     plt.show()
     
 
-#plot_for_one_csv('user/user34.csv')
-#plot_for_one_csv('user/user35.csv')
+plot_for_one_csv('user/user39.csv')
+plot_for_one_csv('user/user40.csv')
 #plot_for_one_csv('user/user36.csv')
 #plot_for_one_csv('user/user37.csv')
 #plot_for_one_csv('user/user38.csv')
     
-gestures = pandas.read_csv('all_data.csv')
-sns.set_style("whitegrid")
-sns.pairplot(gestures, hue = "species", height = 3)
-plt.show()
+#gestures = pandas.read_csv('all_data.csv')
+#sns.set_style("whitegrid")
+#sns.pairplot(gestures, hue = "species", height = 3)
+#plt.show()
