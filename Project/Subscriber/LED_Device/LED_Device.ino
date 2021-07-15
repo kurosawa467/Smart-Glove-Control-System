@@ -21,8 +21,10 @@ const int RED_DIGITAL_PIN = 5;
 const int GREEN_DIGITAL_PIN = 4;
 const int BLUE_DIGITAL_PIN = 0;
 
-int led_color = 7;
-int led_brightness = 100;
+int analogLedColor = 7;
+int analogLedBrightness = 100;
+int digitalLedColor = 7;
+int digitalLedBrightness = 100;
 
 WiFiClient espClient;
 PubSubClient client(mqtt_server, 1883, espClient);
@@ -69,36 +71,52 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
   int command = payload[0] - 48;
 
+  int color = 7;
+  int brightness = 100;
+  if(!strcmp(topic, analog_led_topic)){
+    color = analogLedColor;
+    brightness = analogLedBrightness;
+  } else {
+    color = digitalLedColor;
+    brightness = digitalLedBrightness;
+  }
+
   //if is the case an LED has to be set new from the beginning
   if(true){
     switch(command){
       case 1:
-        led_color = (led_color+1)%8;
+        color = (color+1)%8;
         break;
       case 2:
-        led_color =  led_color==0? 7 : led_color-1;
+        color =  color==0? 7 : color-1;
         break;
       case 3:
-        led_brightness = led_brightness < 10? 0 : led_brightness-10;
+        brightness = brightness < 10? 0 : brightness-10;
         break;
       case 4:
-        led_brightness = led_brightness > 90? 100 : led_brightness+10;        
+        brightness = brightness > 90? 100 : brightness+10;        
         break;
       default:
         Serial.println("Error wrong wrong command!!");
     }
   } else { //this case is the case where we change the the LED value based on their last state
     // color is a 3-bit number decoding rgb
-      int led_color = payload[0] - 48 ;
+      color = payload[0] - 48 ;
       
-       int brightness = 0;
+      brightness = 0;
       for (int i = 2; i < length; i++)
       {
         brightness = brightness * 10 + payload[i] - 48;
       }
-      led_brightness = brightness;
   }
-  setLED(led_color,led_brightness,topic);
+  if(!strcmp(topic, analog_led_topic)){
+    analogLedColor = color;
+    analogLedBrightness = brightness;
+  } else {
+    digitalLedColor = color;
+    digitalLedBrightness = brightness;
+  }
+  setLED(color,brightness,topic);
 }
 
 void setLED(int color, int brightness, char* topic){
@@ -139,9 +157,9 @@ void set_analog_led(int red, int green, int blue, int ratio) {
 }
 
 void set_digital_led(int red, int green, int blue){
-  digitalWrite(RED_DIGITAL_PIN, red);
-  digitalWrite(GREEN_DIGITAL_PIN, green);
-  digitalWrite(BLUE_DIGITAL_PIN, blue);
+  digitalWrite(RED_DIGITAL_PIN, (red+1)%2);
+  digitalWrite(GREEN_DIGITAL_PIN, (green+1)%2);
+  digitalWrite(BLUE_DIGITAL_PIN, (blue+1)%2);
 }
 
 char** splitStr( String str, char c){
