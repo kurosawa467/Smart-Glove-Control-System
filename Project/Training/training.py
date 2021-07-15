@@ -19,7 +19,7 @@ import pickle
 import datetime
 
 class SVMModel:
-    sensor_data_matrix = np.zeros([440, 90])
+    sensor_data_matrix = np.zeros([520, 90])
     classifier_linear = svm.SVC(kernel = 'linear')
     classifier_rbf = svm.SVC(kernel = 'rbf')
 
@@ -46,7 +46,9 @@ class SVMModel:
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                           2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
                            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
                            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
                            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -58,7 +60,9 @@ class SVMModel:
                            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
                            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
                            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+                           3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
                            3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+                           4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
                            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
                            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
                            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -80,7 +84,7 @@ class SVMModel:
         LR_time = (LR_end_time - LR_start_time).total_seconds()
         print("Classification algorithms")
         print("Logistic Regression accuracy is", round(accuracy * 100, 4), '%')
-        print("Logistic Regression takes", round(LR_time, 4), "seconds")
+        print("Logistic Regression prediction takes", round(LR_time, 4), "seconds")
         print()
         
         dtc_filename = 'lr.sav'
@@ -96,7 +100,7 @@ class SVMModel:
         DTC_end_time = datetime.datetime.now()
         DTC_time = (DTC_end_time - DTC_start_time).total_seconds()
         print("Decision Tree Classifier accuracy is", round(accuracy * 100, 4), '%')
-        print("Decision Tree Classifier takes", round(DTC_time, 4), "seconds")
+        print("Decision Tree Classifier prediction takes", round(DTC_time, 4), "seconds")
         print()
         
         dtc_filename = 'dtc.sav'
@@ -111,7 +115,7 @@ class SVMModel:
         KNC_end_time = datetime.datetime.now()
         KNC_time = (KNC_end_time - KNC_start_time).total_seconds()
         print("KNeighbors Classifier accuracy is", round(accuracy * 100, 4), '%')
-        print("KNeighbors Classifier takes", round(KNC_time, 4), "seconds")
+        print("KNeighbors Classifier prediction takes", round(KNC_time, 4), "seconds")
         print()
         
         knc_filename = 'knc.sav'
@@ -126,7 +130,7 @@ class SVMModel:
         LDA_end_time = datetime.datetime.now()
         LDA_time = (LDA_end_time - LDA_start_time).total_seconds()
         print("Linear Discriminant Analysis accuracy is", round(accuracy * 100, 4), '%')
-        print("Linear Discriminant Analysis takes", round(LDA_time, 4), "seconds")
+        print("Linear Discriminant Analysis prediction takes", round(LDA_time, 4), "seconds")
         print()
         
         lda_filename = 'lda.sav'
@@ -142,7 +146,7 @@ class SVMModel:
         GNB_end_time = datetime.datetime.now()
         GNB_time = (GNB_end_time - GNB_start_time).total_seconds()
         print("Gaussian NB accuracy is", round(accuracy * 100, 4), '%')
-        print("Gaussian NB takes", round(GNB_time, 4), "seconds")
+        print("Gaussian NB prediction takes", round(GNB_time, 4), "seconds")
         print()
         
         # SVM linear
@@ -154,7 +158,7 @@ class SVMModel:
         SVM_linear_end_time = datetime.datetime.now()
         SVM_linear_time = (SVM_linear_end_time - SVM_linear_start_time).total_seconds()
         print("SVM linear kernel accuracy is", round(accuracy * 100, 4), '%')
-        print("SVM linear kernel takes", round(SVM_linear_time, 4), "seconds")
+        print("SVM linear kernel prediction takes", round(SVM_linear_time, 4), "seconds")
         print()
         
         # SVM rbf
@@ -166,7 +170,7 @@ class SVMModel:
         SVM_non_linear_end_time = datetime.datetime.now()
         SVM_non_linear_time = (SVM_non_linear_end_time - SVM_non_linear_start_time).total_seconds()
         print("SVM non-linear (rbf) kernel accuracy is", round(accuracy * 100, 4), '%')
-        print("SVM non-linear kernel takes", round(SVM_non_linear_time, 4), "seconds")
+        print("SVM non-linear (rbf) kernel prediction takes", round(SVM_non_linear_time, 4), "seconds")
         print()
         
         # Regression
@@ -185,7 +189,7 @@ class SVMModel:
         LR_end_time = datetime.datetime.now()
         LR_time = (LR_end_time - LR_start_time).total_seconds()
         print("Linear Regression accuracy is", round(accuracy, 4), '%')
-        print("Linear Regression takes", round(SVM_non_linear_time, 4), "seconds")
+        print("Linear Regression prediction takes", round(SVM_non_linear_time, 4), "seconds")
         print()
         
         # Polynomial Regression
@@ -250,7 +254,7 @@ class SVMModel:
         DTR_end_time = datetime.datetime.now()
         DTR_time = (DTR_end_time - DTR_start_time).total_seconds()
         print("Decision Tree Regressor accuracy is", round(accuracy, 4), '%')
-        print("Decision Tree Regressor takes", round(DTR_time, 4), "seconds")
+        print("Decision Tree Regressor prediction takes", round(DTR_time, 4), "seconds")
         print()
         
         rf_filename = 'decision_tree_regressor.sav'
@@ -289,7 +293,7 @@ class SVMModel:
         random_forest_small_time = (random_forest_small_end_time - random_forest_small_start_time).total_seconds()
         # print('Random forest small tree mean absolute error is', round(np.mean(errors), 2))
         print('Random forest small tree accuracy is', round(accuracy, 4), '%')
-        print("Random forest small tree takes", round(random_forest_small_time, 4), "seconds")
+        print("Random forest small tree prediction takes", round(random_forest_small_time, 4), "seconds")
         print()
 
       
@@ -302,7 +306,7 @@ class SVMModel:
         return metrics.accuracy_score(y_test, y_prediction)
 
     def read_data_from_csv(self, gesture, index_offset):
-        index = 0 + 110 * index_offset
+        index = 0 + 130 * index_offset
         for file in glob.glob("./" + gesture + "/*.csv"):
             sensor_data = pandas.read_csv(file, header = 0)
             row = np.concatenate((np.array(sensor_data['yaw']).T,
