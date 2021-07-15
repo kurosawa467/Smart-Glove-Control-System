@@ -106,6 +106,7 @@ function setImagePanel(){
     document.getElementById("image-panel").innerHTML = '<div id="panel" style="background-color: '+getColor(current_color,current_brightness)+'"><img src="lightBuld.png" height="550px "></div><br>'+//'<div id="panel" style="background-color: ' + getColor(current_color,current_brightness)+ '"><img src="lightBuld.png" height="550px "></div><br>' +
         '<input type="button" onClick="startDisconnect()" value="Disconnect"><br>' +
         '<div id="messages"></div>';
+    updateMessage();
 }
 
 function decodeMessage(c){
@@ -127,20 +128,15 @@ function apply(c){
     switch(c) {
         case '1':
             current_color = (current_color +1)%8;
-
             break;
         case '2':
-            current_color = (current_color -1);
-            if (current_color<0)
-                current_color += 8;
+            current_color = current_color==0? 7 : current_color-1;
             break;
         case '3':
-            current_brightness = (current_brightness +10)%110;
+            current_brightness = current_brightness < 20? 0 : current_brightness-20;
             break;
         case '4':
-            current_brightness = (current_brightness -10);
-            if (current_brightness<0)
-                current_brightness += 100;
+            current_brightness = current_brightness > 80? 100 : current_brightness+20;
             break;
         default:
             break;
