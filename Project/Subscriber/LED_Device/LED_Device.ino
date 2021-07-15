@@ -21,6 +21,9 @@ const int RED_DIGITAL_PIN = 5;
 const int GREEN_DIGITAL_PIN = 4;
 const int BLUE_DIGITAL_PIN = 0;
 
+int led_color = 7;
+int led_brightness = 100;
+
 WiFiClient espClient;
 PubSubClient client(mqtt_server, 1883, espClient);
 unsigned long lastMessage = 0;
@@ -64,9 +67,41 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
   Serial.println(".");
 
-  
-  // color is a 3-bit number decoding rgb
-  int color = payload[0] - 48 ;
+  int command = payload[0] - 48;
+
+  //if is the case an LED has to be set new from the beginning
+  if(true){
+    switch(command){
+      case 1:
+        led_color = (led_color+1)%8;
+        break;
+      case 2:
+        led_color =  led_color==0? 7 : led_color-1;
+        break;
+      case 3:
+        led_brightness = led_brightness < 10? 0 : led_brightness-10;
+        break;
+      case 4:
+        led_brightness = led_brightness > 90? 100 : led_brightness+10;        
+        break;
+      default:
+        Serial.println("Error wrong wrong command!!");
+    }
+  } else { //this case is the case where we change the the LED value based on their last state
+    // color is a 3-bit number decoding rgb
+      int led_color = payload[0] - 48 ;
+      
+       int brightness = 0;
+      for (int i = 2; i < length; i++)
+      {
+        brightness = brightness * 10 + payload[i] - 48;
+      }
+      led_brightness = brightness;
+  }
+  setLED(led_color,led_brightness,topic);
+}
+
+void setLED(int color, int brightness, char* topic){
   Serial.print("Color:");
   Serial.println(color);
 
@@ -76,20 +111,14 @@ void callback(char* topic, byte* payload, unsigned int length) {
   color = color >> 1;
   int red = color % 2;
 
-  if(!strcmp(topic, analog_led_topic)){
-    int ratio = 0;
-    for (int i = 2; i < length; i++)
-    {
-      ratio = ratio * 10 + payload[i] - 48;
-    }
-    Serial.print("Ratio:");
-    Serial.println(ratio);
+  Serial.print("Brightness:");
+  Serial.println(brightness);
   
-    set_analog_led( red, green, blue, ratio);
+  if(!strcmp(topic, analog_led_topic)){  
+    set_analog_led( red, green, blue, brightness);
   } else {
     set_digital_led(red, green, blue);
   }
-
 }
 
 void set_analog_led(int red, int green, int blue, int ratio) {
@@ -115,25 +144,11 @@ void set_digital_led(int red, int green, int blue){
   digitalWrite(BLUE_DIGITAL_PIN, blue);
 }
 
-/*void dim() {
-  int pwmIntervals = 100;
-  int del = 5;
+char** splitStr( String str, char c){
+  char** input =0;
+  return input;
+}
 
-  int R = (pwmIntervals * log10(2)) / (log10(255));
-  while (true) {
-    int brightness = 0;
-    for (int interval = 0; interval <= pwmIntervals; interval++) {
-      brightness = pow (2, (interval / R)) - 1;
-      analogWrite(RED_Pin, brightness);
-      delay(del);
-    }
-    for (int interval = pwmIntervals; interval >= 0; interval--) {
-      brightness = pow (2, (interval / R)) - 1;
-      analogWrite(RED_Pin, brightness);
-      delay(del);
-    }
-  }
-}*/
 
 void setup() {
   Serial.begin(9600);
@@ -161,5 +176,4 @@ void loop() {
     connect_MQTT();
   }
   client.loop();
-  // delay(2000);
 }
