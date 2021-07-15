@@ -66,7 +66,8 @@ function onConnectionLost(responseObject) {
 // Called when a message arrives
 function onMessageArrived(message) {
     console.log("onMessageArrived: " + message.payloadString);
-    message_queue += '<span>Message: ' + message.payloadString + ' = ' + decodeMessage(message.payloadString) + '</span><br/>';
+    str = nessage.payloadString.split(' ')
+    message_queue += '<span>Message: ' + str[0] + ' = ' + decodeMessage(str[0]) + 'comand ID:' + str[1] + '</span><br/>';
     apply(message.payloadString);
     console.log(current_color)
     console.log(current_brightness)

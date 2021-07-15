@@ -117,6 +117,15 @@ void callback(char* topic, byte* payload, unsigned int length) {
     digitalLedBrightness = brightness;
   }
   setLED(color,brightness,topic);
+
+  //get Command id
+  int id = 0;
+  for (int i = 2; i < length; i++)
+      {
+        id = id * 10 + payload[i] - 48;
+      }
+  Serial.print("Command ID:");
+  Serial.println(id);
 }
 
 void setLED(int color, int brightness, char* topic){
