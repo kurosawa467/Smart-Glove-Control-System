@@ -103,10 +103,12 @@ class SmartGloveControlSystem:
         command = self.get_command(tokens)
         if command == 'next device':
             self.selected_device = (self.selected_device + 1) % len(self.offered_topics)
+            client.publish(self.offered_topics[self.selected_device], "0")
             print("current device", self.selected_device)
         elif command == 'previous device':
             self.selected_device = (self.selected_device - 1) % len(self.offered_topics)
             print("current device", self.selected_device)
+            client.publish(self.offered_topics[self.selected_device], "0")
         elif command == 'next color':
             client.publish(self.offered_topics[self.selected_device], "1")
         elif command == 'previous color':

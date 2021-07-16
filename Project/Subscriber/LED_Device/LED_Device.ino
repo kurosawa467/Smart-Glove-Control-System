@@ -8,11 +8,14 @@ const char* ssid = ssid_name;
 const char* wifi_password = password_name;
 
 const char* mqtt_server = server_ip;
+//const char* analog_led_topic = "/esp8266/2.1";
+//const char* digital_led_topic = "/esp8266/2.2";
 const char* analog_led_topic = "/esp8266/1.1";
 const char* digital_led_topic = "/esp8266/1.2";
 const char* mqtt_username = "mosquitto";
 const char* mqtt_password = "mosquitto";
 const char* clientID = "ESP8266/1";
+//const char* clientID = "ESP8266/2";
 
 const int RED_ANALOG_PIN = 14;
 const int GREEN_ANALOG_PIN = 12;
@@ -23,7 +26,7 @@ const int BLUE_DIGITAL_PIN = 0;
 
 int analogLedColor = 7;
 int analogLedBrightness = 100;
-int digitalLedColor = 7;
+int digitalLedColor = 0;
 int digitalLedBrightness = 100;
 
 WiFiClient espClient;
@@ -81,9 +84,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
     brightness = digitalLedBrightness;
   }
 
+  bool isSelected = false;
   //if is the case an LED has to be set new from the beginning
   if(true){
     switch(command){
+      case 0:
+        isSelected = true;
+        break;
       case 1:
         color = (color+1)%8;
         break;
@@ -109,6 +116,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
         brightness = brightness * 10 + payload[i] - 48;
       }
   }
+
+  
   if(!strcmp(topic, analog_led_topic)){
     analogLedColor = color;
     analogLedBrightness = brightness;
@@ -116,7 +125,31 @@ void callback(char* topic, byte* payload, unsigned int length) {
     digitalLedColor = color;
     digitalLedBrightness = brightness;
   }
-  setLED(color,brightness,topic);
+  if(isSelected){
+    showSelected(topic);
+  }
+  else {
+    setLED(color,brightness,topic);
+  }
+}
+
+
+void showSelected(char* topic){
+  int color = 0;
+  int brightness = 0;
+  if(!strcmp(topic, analog_led_topic)){
+    color = analogLedColor;
+    brightness = analogLedBrightness;
+  } else {
+    color = digitalLedColor;
+    brightness = digitalLedBrightness;
+  }
+  
+  for(int i = 0; i<3;i++){
+     setLED(0,0,topic);
+     delay(500);
+     setLED(color,brightness,topic);
+  }
 }
 
 void setLED(int color, int brightness, char* topic){
@@ -161,6 +194,7 @@ void set_digital_led(int red, int green, int blue){
   digitalWrite(GREEN_DIGITAL_PIN, (green+1)%2);
   digitalWrite(BLUE_DIGITAL_PIN, (blue+1)%2);
 }
+
 
 char** splitStr( String str, char c){
   char** input =0;

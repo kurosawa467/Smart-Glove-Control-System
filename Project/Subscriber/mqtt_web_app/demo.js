@@ -111,6 +111,8 @@ function setImagePanel(){
 
 function decodeMessage(c){
     switch(c) {
+        case '0':
+            return 'device selected';
         case '1':
             return 'next color';
         case '2':
@@ -126,6 +128,9 @@ function decodeMessage(c){
 
 function apply(c){
     switch(c) {
+        case '0':
+            //blink();
+            break;
         case '1':
             current_color = (current_color +1)%8;
             break;
@@ -152,3 +157,18 @@ function getColor(color,brightness) {
     console.log('red:' + red + ", green:" + green + ', blue:' + blue);
     return "rgba(" + red + ", " + green + ", " + blue + "," + brightness / 100 + ")";
 }
+
+/*function blink(){
+    color = current_color;
+    brightness = current_brightness;
+    for(i = 0; i<3; i++){
+        current_color = 0;
+        current_brightness = 0;
+        setImagePanel();
+
+        current_color = 0;
+        current_brightness = 0;
+        setImagePanel();
+    }
+}*/
+
