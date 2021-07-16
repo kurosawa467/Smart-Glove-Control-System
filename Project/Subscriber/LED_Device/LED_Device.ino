@@ -140,16 +140,24 @@ void showSelected(char* topic){
   if(!strcmp(topic, analog_led_topic)){
     color = analogLedColor;
     brightness = analogLedBrightness;
-  } else {
-    color = digitalLedColor;
-    brightness = digitalLedBrightness;
-  }
-  
-  for(int i = 0; i<3;i++){
+    for(int i = 0; i<3;i++){
      setLED(0,0,topic);
      delay(500);
      setLED(color,brightness,topic);
+     delay(500);
   }
+  } else {
+    color = digitalLedColor;
+    brightness = digitalLedBrightness;
+      for(int i = 0; i<3;i++){
+      setLED(7,100,topic);
+      delay(500);
+      setLED(color,brightness,topic);
+      delay(500);
+      }
+  }
+  
+
 }
 
 void setLED(int color, int brightness, char* topic){
