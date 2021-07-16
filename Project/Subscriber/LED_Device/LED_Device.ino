@@ -8,14 +8,14 @@ const char* ssid = ssid_name;
 const char* wifi_password = password_name;
 
 const char* mqtt_server = server_ip;
-//const char* analog_led_topic = "/esp8266/2.1";
-//const char* digital_led_topic = "/esp8266/2.2";
-const char* analog_led_topic = "/esp8266/1.1";
-const char* digital_led_topic = "/esp8266/1.2";
+//const char* analog_led_topic = "/esp8266/1.1";
+//const char* digital_led_topic = "/esp8266/1.2";
+const char* analog_led_topic = "/esp8266/2.1";
+const char* digital_led_topic = "/esp8266/2.2";
 const char* mqtt_username = "mosquitto";
 const char* mqtt_password = "mosquitto";
-const char* clientID = "ESP8266/1";
-//const char* clientID = "ESP8266/2";
+//const char* clientID = "ESP8266/1";
+const char* clientID = "ESP8266/2";
 
 const int RED_ANALOG_PIN = 14;
 const int GREEN_ANALOG_PIN = 12;
@@ -26,7 +26,7 @@ const int BLUE_DIGITAL_PIN = 0;
 
 int analogLedColor = 7;
 int analogLedBrightness = 100;
-int digitalLedColor = 0;
+int digitalLedColor = 7;
 int digitalLedBrightness = 100;
 
 WiFiClient espClient;
@@ -150,7 +150,7 @@ void showSelected(char* topic){
     color = digitalLedColor;
     brightness = digitalLedBrightness;
       for(int i = 0; i<3;i++){
-      setLED(7,100,topic);
+      setLED(0,100,topic);
       delay(500);
       setLED(color,brightness,topic);
       delay(500);
@@ -215,9 +215,9 @@ void setup() {
   pinMode(RED_ANALOG_PIN, OUTPUT);
   pinMode(GREEN_ANALOG_PIN, OUTPUT);
   pinMode(BLUE_ANALOG_PIN, OUTPUT);
-  digitalWrite(RED_ANALOG_PIN, LOW);
-  digitalWrite(GREEN_ANALOG_PIN, LOW);
-  digitalWrite(BLUE_ANALOG_PIN, LOW);
+  digitalWrite(RED_ANALOG_PIN, HIGH);
+  digitalWrite(GREEN_ANALOG_PIN, HIGH);
+  digitalWrite(BLUE_ANALOG_PIN, HIGH);
 
   pinMode(RED_DIGITAL_PIN, OUTPUT);
   pinMode(GREEN_DIGITAL_PIN, OUTPUT);
