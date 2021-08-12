@@ -14,7 +14,7 @@ We are using MQTT as communication protocol and we are following the publisher-s
 
 # The ESP32
 There are two kind of sensors connected to the ESP32. An IMU and four flexensors.
-The wireing is as follows:
+The wiring is as follows:
 ![plot](./Reports\ and\ Documents/Glove-circuit.png)
 
 The code is developed using the Arduino environment.
@@ -33,5 +33,10 @@ Digital LED:
 - Blue Pin: 0
 
 
-# Raspberry Pi
-To develope the broker software we used Python3. The MQTT communication was implemented using the PHAO library.
+# Instructions on how it could be run
+1. Upload code ".\Project\Publisher\gloveESP32\gloveESP32.ino" to the glove microcontroller, and change internet connection configurations. Keep microcontroller wired up and running.
+2. Upload code ".\Project\Subscriber\LED_Device\LED_Device.ino" to the LED lights microcontroller, and change internet connection configurations.
+3. Run the JavaScripe web app. ".\Project\Subscriber\mqtt_web_app\index.html" in your browser
+4. Run the Raspberry Pi. First, run command "sudo systemctl start mosquitto". Then navigate to directory "smart-glove-control-system\Project\Broker" and run communication.py, "python3 communication.py".
+5. Now everything should be set up and ready to go.
+
