@@ -164,9 +164,9 @@ void setLED(int color, int brightness, char* topic){
   Serial.print("Color:");
   Serial.println(color);
 
-  int green = color % 2;
-  color = color >> 1;
   int blue = color % 2;
+  color = color >> 1;
+  int green = color % 2;
   color = color >> 1;
   int red = color % 2;
 
