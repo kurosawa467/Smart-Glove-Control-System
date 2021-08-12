@@ -21,13 +21,16 @@ The code is developed using the Arduino environment.
 # The ESP8266
 This ESP has 2 LEDs connected to it. One LED is considered as analoge LED while the second as digital, because our ESP8266 did not provide enough PWM pins. Therefor the LEDs are connected ass follows:
 Analog LED:
-    -Red pin: 14
-    -Green Pin: 12
-    -Blue Pin: 15
+- Red pin: 14
+- Green Pin: 12
+- Blue Pin: 15
+
+
 Digital LED:
-    -Red pin: 5
-    -Green Pin: 4
-    -Blue Pin: 0
+- Red pin: 5
+- Green Pin: 4
+- Blue Pin: 0
+
 
 # Raspberry Pi
 To develope the broker software we used Python3. The MQTT communication was implemented using the PHAO library.
