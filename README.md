@@ -15,6 +15,7 @@ We are using MQTT as communication protocol and we are following the publisher-s
 # The ESP32
 There are two kind of sensors connected to the ESP32. An IMU and four flexensors.
 The wireing is as follows:
+![plot](./Reports\ and\ Documents/Glove-circuit.png)
 
 The code is developed using the Arduino environment.
 
