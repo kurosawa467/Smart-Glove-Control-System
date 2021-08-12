@@ -12,20 +12,21 @@ Our project is structured the following:
 - Raspberry Pi as Message Broker and to recognize the performed gestures.
 We are using MQTT as communication protocol and we are following the publisher-subscriber pattern. Where the glove publishes new commands, the broker recieves them. Interpretes the gesture (if a gesture is performed) and the publishes again a new message. The IoT device then recieves it if it is subscribed to the according topic.
 
-# The ESP32
+## The ESP32
 There are two kind of sensors connected to the ESP32. An IMU and four flexensors.
 The wiring is as follows:
-![plot](./Reports\ and\ Documents/Glove-circuit.png)
+
+<img src="./Reports and Documents/Glove-circuit.png" width="400px">
 
 The code is developed using the Arduino environment.
 
-# The ESP8266
+## The ESP8266
 This ESP has 2 LEDs connected to it. One LED is considered as analoge LED while the second as digital, because our ESP8266 did not provide enough PWM pins. Therefor the LEDs are connected ass follows:
+
 Analog LED:
 - Red pin: 14
 - Green Pin: 12
 - Blue Pin: 15
-
 
 Digital LED:
 - Red pin: 5
