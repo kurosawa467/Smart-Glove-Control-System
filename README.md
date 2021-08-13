@@ -33,11 +33,24 @@ Digital LED:
 - Green Pin: 4
 - Blue Pin: 0
 
+## Raspberry Pi setup
+We followed this tuorial to set up the mosquitto server on the raspberry pi https://diyi0t.com/microcontroller-to-raspberry-pi-wifi-mqtt-communication/. In Addition to the 1883 port we also added the 1884 port for being able to access the webapp. In total we added the following lined to the etc/mosquitto/mosquitto.conf file:
+
+    password_file /etc/mosquitto/pwfile
+
+    listener 1883
+    protocol mqtt 
+
+    listener 1884
+    protocol websockets
+
+
 
 # Instructions on how it could be run
 1. Change internet connection configurations in the ".\Project\Publisher\gloveESP32\WifiAccess.h" and upload code ".\Project\Publisher\gloveESP32\gloveESP32.ino" to the glove microcontroller (ESP32). Keep microcontroller wired up and running.
 2. Change internet connection configurations in the ".\Project\Subscriber\LED_Device\WifiAccess.h" and upload code ".\Project\Subscriber\LED_Device\LED_Device.ino" to the LED lights microcontroller (ESP8266). Keep microcontroller wired up and running.
-3. Run the JavaScripe web app ".\Project\Subscriber\mqtt_web_app\index.html" in your browser.
-4. Run the Raspberry Pi. First, run command "sudo systemctl start mosquitto". Then navigate to directory "\smart-glove-control-system\Project\Broker", setup the Raspberry Pi IP adress in the code in communication.py, and run it using "python3 communication.py".
+3. Run the Raspberry Pi. First, run command "sudo systemctl start mosquitto". Then navigate to directory "\smart-glove-control-system\Project\Broker", setup the Raspberry Pi IP adress in the code in communication.py, and run it using "python3 communication.py".
+4. Run the JavaScripe web app ".\Project\Subscriber\mqtt_web_app\index.html" in your browser.
 5. Now everything should be set up and ready to go.
+
 
