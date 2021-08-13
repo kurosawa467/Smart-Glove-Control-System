@@ -14,7 +14,7 @@ Our project is structured the following:
 We are using MQTT as communication protocol and we are following the publisher-subscriber pattern. Where the glove publishes new commands, the broker receives them, interprets the gesture (if a gesture is performed), and then publishes a new message containing the command. The IoT device then receives it, if it is subscribed to the corresponding topic.
 
 ## The ESP32
-There are two kind of sensors connected to the ESP32. An IMU and four flexensors.
+There are two kinds of sensors connected to the ESP32, the IMU sensor and the flex sensors.
 The wiring is as follows:
 
 <img src="./Reports and Documents/Glove-circuit.png" width="400px">
