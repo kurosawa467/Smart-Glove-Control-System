@@ -22,7 +22,7 @@ The wiring is as follows:
 The code is developed using the Arduino environment.
 
 ## The ESP8266
-This ESP has 2 LEDs connected to it. One LED is considered as analoge LED while the second as digital, because our ESP8266 did not provide enough PWM pins. Therefor the LEDs are connected ass follows:
+This ESP has 2 LEDs connected to it. One LED is considered as analoge LED while the second as digital, because our ESP8266 did not provide enough PWM pins. Therefor the LEDs are connected as follows:
 
 Analog LED:
 - Red pin: 14
