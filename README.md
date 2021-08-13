@@ -35,8 +35,8 @@ Digital LED:
 
 
 # Instructions on how it could be run
-1. Upload code ".\Project\Publisher\gloveESP32\gloveESP32.ino" to the glove microcontroller, and change internet connection configurations. Keep microcontroller wired up and running.
-2. Upload code ".\Project\Subscriber\LED_Device\LED_Device.ino" to the LED lights microcontroller, and change internet connection configurations.
+1. Upload code ".\Project\Publisher\gloveESP32\gloveESP32.ino" to the glove microcontroller, and change internet connection configurations in the ".\Project\Publisher\gloveESP32\WifiAccess.h". Keep microcontroller wired up and running.
+2. Upload code ".\Project\Subscriber\LED_Device\LED_Device.ino" to the LED lights microcontroller, and change internet connection configurations in the ".\Project\Subscriber\LED_Device\WifiAccess.h".
 3. Run the JavaScripe web app. ".\Project\Subscriber\mqtt_web_app\index.html" in your browser
 4. Run the Raspberry Pi. First, run command "sudo systemctl start mosquitto". Then navigate to directory "smart-glove-control-system\Project\Broker" and run communication.py, "python3 communication.py".
 5. Now everything should be set up and ready to go.
