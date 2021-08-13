@@ -34,7 +34,7 @@ Digital LED:
 - Blue Pin: 0
 
 ## Raspberry Pi setup
-We followed this tuorial to set up the mosquitto server on the raspberry pi https://diyi0t.com/microcontroller-to-raspberry-pi-wifi-mqtt-communication/. In Addition to the 1883 port we also added the 1884 port for being able to access the webapp. In total we added the following lined to the etc/mosquitto/mosquitto.conf file:
+We followed this tutorial to set up the mosquitto server on the raspberry pi https://diyi0t.com/microcontroller-to-raspberry-pi-wifi-mqtt-communication/. In addition to the 1883 port, we also added the 1884 port for being able to access the webapp. In the end, we added the following lines to the /etc/mosquitto/mosquitto.conf file:
 
     password_file /etc/mosquitto/pwfile
 
