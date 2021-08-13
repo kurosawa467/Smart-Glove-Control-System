@@ -10,7 +10,8 @@ Our project is structured the following:
 - ESP32 microcontroler as glove
 - ESP8266 microcontroller as controllable IoT device
 - Raspberry Pi as Message Broker and to recognize the performed gestures.
-We are using MQTT as communication protocol and we are following the publisher-subscriber pattern. Where the glove publishes new commands, the broker recieves them. Interpretes the gesture (if a gesture is performed) and the publishes again a new message. The IoT device then recieves it if it is subscribed to the according topic.
+
+We are using MQTT as communication protocol and we are following the publisher-subscriber pattern. Where the glove publishes new commands, the broker receives them, interprets the gesture (if a gesture is performed), and then publishes a new message containing the command. The IoT device then receives it, if it is subscribed to the corresponding topic.
 
 ## The ESP32
 There are two kind of sensors connected to the ESP32. An IMU and four flexensors.
